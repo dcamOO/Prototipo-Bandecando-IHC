@@ -1,0 +1,63 @@
+<style>
+    .splash-view {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #ffffff;
+    }
+
+    .splash-logo-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 80px;
+    }
+
+    /* Nova classe para redimensionar a logo PNG */
+    .splash-logo-img {
+        width: 200px; /* Ajuste este valor se a logo ficar muito grande ou pequena */
+        height: auto;
+        object-fit: contain;
+        margin-bottom: 16px;
+    }
+
+    .splash-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--green-logo);
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(0, 200, 83, 0.2);
+        border-top: 4px solid var(--green-logo);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-top: auto;
+        margin-bottom: 50px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<div class="splash-view">
+    <div style="flex: 1;"></div> 
+    
+    <div class="splash-logo-container">
+        <img src="assets/logo.png" alt="Logo Bandecando" class="splash-logo-img">
+    </div>
+
+    <div class="spinner"></div>
+</div>
+
+<script>
+    setTimeout(() => {
+        nav('welcome');
+    }, 2500);
+</script>

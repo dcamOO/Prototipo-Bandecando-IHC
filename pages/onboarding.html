@@ -1,0 +1,165 @@
+<style>
+    .onboarding-view {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--bg-app);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bg-blob {
+        position: absolute;
+        top: -50px;
+        left: -20px;
+        width: 120%;
+        height: 350px;
+        background-color: #5ce18a;
+        border-radius: 0 0 40% 60%;
+        z-index: 1;
+        transform: rotate(-5deg);
+    }
+
+    .slide-image-container {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        height: 300px;
+        margin-top: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .slide-image {
+        width: 85%;
+        height: 220px;
+        object-fit: cover;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        background-color: #ddd; 
+    }
+
+    .onboarding-content {
+        position: relative;
+        z-index: 2;
+        padding: 20px var(--spacing-main);
+        text-align: center;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .slide-title {
+        color: var(--green-text);
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
+
+    .slide-desc {
+        color: var(--text-main);
+        font-size: 1rem;
+        line-height: 1.5;
+        font-weight: 500;
+        margin-bottom: auto;
+    }
+
+    .dots-container {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 40px;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        background-color: #d1d1d1;
+        border-radius: 4px;
+        transition: 0.3s;
+    }
+
+    .dot.active {
+        background-color: var(--green-primary);
+        width: 24px;
+    }
+
+    .onboarding-footer {
+        padding: 0 var(--spacing-main) 30px var(--spacing-main);
+        position: relative;
+        z-index: 2;
+    }
+</style>
+
+<div class="onboarding-view">
+    <div class="bg-blob"></div>
+
+    <div class="slide-image-container">
+        <img id="obs-image" class="slide-image" src="" alt="Instrução">
+    </div>
+
+    <div class="onboarding-content">
+        <h2 id="obs-title" class="slide-title">Veja o cardápio</h2>
+        <p id="obs-desc" class="slide-desc">Descubra as opções do dia, incluindo pratos principais e opções vegetarianas antes de sair de casa.</p>
+        
+        <div class="dots-container">
+            <div class="dot active" id="dot-0"></div>
+            <div class="dot" id="dot-1"></div>
+            <div class="dot" id="dot-2"></div>
+        </div>
+    </div>
+
+    <div class="onboarding-footer">
+        <button id="obs-btn" class="btn-primary" onclick="nextSlide()">Próximo</button>
+    </div>
+</div>
+
+<script>
+    let currentStep = 0;
+
+    const slides = [
+        {
+            title: "Veja o cardápio",
+            desc: "Acompanhe as opções de refeição do dia, incluindo alternativas vegetarianas e guarnições, diretamente no seu celular.",
+            img: "assets/onboarding-1.png"
+        },
+        {
+            title: "Saiba como está a fila",
+            desc: "Consulte o status em tempo real da fila do RU através da colaboração de outros alunos e evite esperas longas.",
+            img: "assets/onboarding-2.png"
+        },
+        {
+            title: "Encontre companhia",
+            desc: "Crie ou junte-se a grupos baseados em interesses em comum para ter uma ótima conversa durante o almoço.",
+            img: "assets/onboarding-3.png"
+        }
+    ];
+
+    function updateView() {
+        document.getElementById('obs-title').innerText = slides[currentStep].title;
+        document.getElementById('obs-desc').innerText = slides[currentStep].desc;
+        document.getElementById('obs-image').src = slides[currentStep].img;
+
+        document.querySelectorAll('.dot').forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentStep);
+        });
+
+        if (currentStep === slides.length - 1) {
+            document.getElementById('obs-btn').innerText = "Começar";
+        } else {
+            document.getElementById('obs-btn').innerText = "Próximo";
+        }
+    }
+
+    function nextSlide() {
+        if (currentStep < slides.length - 1) {
+            currentStep++;
+            updateView();
+        } else {
+            // Alterado de 'dashboard' para 'login'
+            nav('login');
+        }
+    }
+
+    updateView();
+</script>

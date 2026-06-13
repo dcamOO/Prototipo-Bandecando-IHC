@@ -1,0 +1,120 @@
+<style>
+    .login-view {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px var(--spacing-main) 30px;
+        background-color: var(--bg-app);
+    }
+
+    .form-logo {
+        width: 120px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    .ufmg-title-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .ufmg-icon {
+        width: 24px; /* Ajuste conforme a imagem da árvore da UFMG */
+        height: auto;
+    }
+
+    .login-title {
+        color: var(--green-text);
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .login-card {
+        width: 100%;
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-card);
+        padding: 24px 20px;
+        margin-bottom: 30px;
+    }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 16px;
+    }
+
+    .input-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 12px;
+        background-color: #ffffff;
+        font-size: 1rem;
+        color: var(--text-main);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        outline: none;
+    }
+
+    .form-input::placeholder {
+        color: #999;
+    }
+
+    .form-input:focus {
+        border: 1px solid var(--green-primary);
+    }
+
+    .eye-icon {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: #999;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        cursor: pointer;
+    }
+
+    .bottom-brand {
+        margin-top: auto;
+        color: var(--green-logo);
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+</style>
+
+<div class="login-view">
+    <img src="assets/logo.png" alt="Logo Bandecando" class="form-logo">
+    
+    <div class="ufmg-title-container">
+        <!--<img src="assets/ufmg-logo.png" alt="UFMG" class="ufmg-icon">-->
+        <h1 class="login-title">Login minha UFMG</h1>
+    </div>
+
+    <div class="login-card">
+        <div class="input-group">
+            <input type="text" class="form-input" placeholder="Usuário">
+        </div>
+        <div class="input-group">
+            <input type="password" class="form-input" placeholder="Senha">
+            <svg class="eye-icon" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </div>
+    </div>
+
+    <button class="btn-primary" onclick="nav('ru-choice')">Entre</button>
+
+    <div class="bottom-brand">Bandecando</div>
+</div>

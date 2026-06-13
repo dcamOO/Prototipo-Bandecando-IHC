@@ -1,0 +1,73 @@
+/* ================= PADRÕES DE DESIGN ================= */
+:root {
+    /* Paleta de Cores */
+    --bg-app: #f7f7f7;           /* Fundo geral da aplicação */
+    --bg-card: #ffffff;          /* Fundo dos cartões */
+    
+    --text-main: #111111;        /* Texto escuro principal */
+    --text-muted: #444444;       /* Texto secundário (ex: subtítulo do header) */
+    
+    --green-primary: #2b9348;    /* Verde principal (Botão "Encontre companhia") */
+    --green-logo: #00c853;       /* Verde vibrante (Logo e título principal) */
+    --green-text: #2c9e4b;       /* Verde escuro para títulos de seção (Cardápio) */
+    --green-light: #43a047;      /* Verde claro (Status da fila) */
+    
+    --border-color: #e0e0e0;     /* Bordas sutis dos cartões */
+
+    /* Tipografia */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    
+    /* Espaçamentos e Bordas */
+    --radius-card: 16px;         /* Arredondamento dos cartões */
+    --radius-btn: 30px;          /* Arredondamento dos botões (Pill shape) */
+    --spacing-main: 24px;        /* Margem lateral do app */
+}
+
+/* ================= RESET E BASE ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: #e5e5e5; /* Fundo escuro fora do contêiner do celular */
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* Contêiner que simula a tela do celular */
+.app-container {
+    width: 100%;
+    max-width: 414px;
+    height: 100%;
+    background-color: var(--bg-app);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Estilo padrão de botões */
+.btn-primary {
+    background-color: var(--green-primary);
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 16px;
+    border-radius: var(--radius-btn);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+}

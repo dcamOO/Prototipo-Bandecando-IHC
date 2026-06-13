@@ -1,0 +1,78 @@
+<style>
+    .welcome-view {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: var(--spacing-main);
+        /* Atualizado para a imagem welcome.png */
+        background-image: linear-gradient(to bottom, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 90%), url('assets/welcome.png');
+        background-color: #555; 
+        background-size: cover;
+        background-position: center;
+    }
+
+    .welcome-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--green-logo);
+    }
+
+    /* Redimensionamento manual da logo nesta tela */
+    .welcome-logo-img {
+        width: 45px; 
+        height: auto;
+        object-fit: contain;
+    }
+
+    .welcome-text {
+        color: #ffffff;
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 30px;
+    }
+
+    .btn-welcome {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .btn-welcome .arrow-icon {
+        position: absolute;
+        left: 8px;
+        background: #ffffff;
+        color: var(--green-primary);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+</style>
+
+<div class="welcome-view">
+    <div class="welcome-brand">
+        <h1 class="welcome-title">Bandecando</h1>
+    </div>
+    
+    <p class="welcome-text">
+        Bem vindo ao Bandecando! Um app para encontrar alguém para almoçar e acompanhar as novidades do RU da UFMG.
+    </p>
+
+    <button class="btn-primary btn-welcome" onclick="nav('onboarding')">
+        <span class="arrow-icon">›</span>
+        Comece
+    </button>
+</div>
