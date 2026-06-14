@@ -9,7 +9,7 @@
     }
 
     .form-logo {
-        width: 120px;
+        width: 60px;
         height: auto;
         margin-bottom: 20px;
     }
@@ -22,7 +22,7 @@
     }
 
     .ufmg-icon {
-        width: 24px; /* Ajuste conforme a imagem da árvore da UFMG */
+        width: 24px;
         height: auto;
     }
 
@@ -38,7 +38,7 @@
         border: 1px solid var(--border-color);
         border-radius: var(--radius-card);
         padding: 24px 20px;
-        margin-bottom: 30px;
+        margin-bottom: 20px; /* Reduzido para dar espaço ao erro */
     }
 
     .input-group {
@@ -60,6 +60,7 @@
         color: var(--text-main);
         box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         outline: none;
+        transition: border 0.2s;
     }
 
     .form-input::placeholder {
@@ -68,6 +69,10 @@
 
     .form-input:focus {
         border: 1px solid var(--green-primary);
+    }
+    
+    .form-input.error {
+        border: 1px solid #d00000;
     }
 
     .eye-icon {
@@ -85,6 +90,17 @@
         cursor: pointer;
     }
 
+    /* Mensagem de Erro */
+    .error-message {
+        display: none;
+        color: #d00000;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+        width: 100%;
+    }
+
     .bottom-brand {
         margin-top: auto;
         color: var(--green-logo);
@@ -97,16 +113,16 @@
     <img src="assets/logo.png" alt="Logo Bandecando" class="form-logo">
     
     <div class="ufmg-title-container">
-        <!--<img src="assets/ufmg-logo.png" alt="UFMG" class="ufmg-icon">-->
+        <img src="assets/ufmg-logo.png" alt="UFMG" class="ufmg-icon">
         <h1 class="login-title">Login minha UFMG</h1>
     </div>
 
     <div class="login-card">
         <div class="input-group">
-            <input type="text" class="form-input" placeholder="Usuário">
+            <input type="text" id="login-user" class="form-input" placeholder="Usuário">
         </div>
         <div class="input-group">
-            <input type="password" class="form-input" placeholder="Senha">
+            <input type="password" id="login-pass" class="form-input" placeholder="Senha">
             <svg class="eye-icon" viewBox="0 0 24 24">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                 <circle cx="12" cy="12" r="3"></circle>
@@ -114,7 +130,51 @@
         </div>
     </div>
 
-    <button class="btn-primary" onclick="nav('ru-choice')">Entre</button>
+    <div id="login-error" class="error-message"></div>
+
+    <button class="btn-primary" onclick="window.handleLogin()">Entre</button>
 
     <div class="bottom-brand">Bandecando</div>
 </div>
+
+<script>
+    window.handleLogin = function() {
+        const userField = document.getElementById('login-user');
+        const passField = document.getElementById('login-pass');
+        const errorDiv = document.getElementById('login-error');
+        
+        const user = userField.value.trim();
+        const pass = passField.value.trim();
+
+        // Reseta estados de erro
+        userField.classList.remove('error');
+        passField.classList.remove('error');
+        errorDiv.style.display = 'none';
+
+        // Validação
+        if (!user && !pass) {
+            userField.classList.add('error');
+            passField.classList.add('error');
+            errorDiv.innerText = 'Preencha seu usuário e senha.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        if (!user) {
+            userField.classList.add('error');
+            errorDiv.innerText = 'O campo de usuário é obrigatório.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        if (!pass) {
+            passField.classList.add('error');
+            errorDiv.innerText = 'A senha é obrigatória para acessar.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        // Se passar nas validações, navega
+        nav('ru-choice');
+    };
+</script>

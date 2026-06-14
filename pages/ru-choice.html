@@ -67,11 +67,20 @@
     <h1 class="choice-title">Escolha um Bandejão</h1>
 
     <div class="choice-card">
-        <button class="ru-option-btn" onclick="nav('dashboard')">Restaurante Setorial I</button>
-        <button class="ru-option-btn" onclick="nav('dashboard')">Restaurante Setorial II</button>
-        <button class="ru-option-btn" onclick="nav('dashboard')">Restaurante Saúde e Direito</button>
-        <button class="ru-option-btn" onclick="nav('dashboard')">Restaurante Setorial ICA</button>
+        <button class="ru-option-btn" onclick="window.chooseRU('Restaurante Setorial I')">Restaurante Setorial I</button>
+        <button class="ru-option-btn" onclick="window.chooseRU('Restaurante Setorial II')">Restaurante Setorial II</button>
+        <button class="ru-option-btn" onclick="window.chooseRU('Restaurante Saúde e Direito')">Restaurante Saúde e Direito</button>
+        <button class="ru-option-btn" onclick="window.chooseRU('Restaurante Setorial ICA')">Restaurante Setorial ICA</button>
     </div>
 
     <div class="bottom-brand">Bandecando</div>
 </div>
+
+<script>
+    window.chooseRU = function(nomeRU) {
+        // Salva a escolha no navegador do usuário
+        localStorage.setItem('bandecando_selected_ru', nomeRU);
+        // Navega para o dashboard
+        nav('dashboard');
+    };
+</script>

@@ -1,13 +1,12 @@
 <style>
-    /* Estilos específicos desta página (podem ser movidos para css/dashboard.css) */
     .dashboard-view {
         padding: var(--spacing-main);
         display: flex;
         flex-direction: column;
         height: 100%;
+        padding-bottom: 40px;
     }
 
-    /* Header */
     .brand-header {
         text-align: center;
         margin-top: 20px;
@@ -23,101 +22,90 @@
         font-weight: 700;
         color: var(--green-logo);
     }
-    /* Nova classe para a logo do cabeçalho */
+
     .dashboard-logo-img {
-        width: 120px; /* Redimensionamento manual para alinhar com o texto */
+        width: 32px;
         height: auto;
         object-fit: contain;
     }
 
     .brand-subtitle {
         font-size: 0.9rem;
-        color: var(--text-main);
+        color: var(--text-muted);
         margin-top: 8px;
         font-weight: 400;
     }
 
-    /* Cartões Base */
-    .feature-card {
+    .modern-card {
         background-color: var(--bg-card);
         border: 1px solid var(--border-color);
-        border-radius: var(--radius-card);
+        border-radius: 16px;
         padding: 20px;
         margin-bottom: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
 
-    /* Fila Section */
-    .queue-title {
+    .card-title {
         font-size: 1.2rem;
-        font-weight: 500;
-        color: var(--text-main);
-        margin-bottom: 12px;
-    }
-
-    .queue-status-box {
-        background-color: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 12px 16px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-
-    .queue-status-text {
-        color: var(--green-light);
-        font-weight: 600;
-        font-size: 1rem;
-    }
-
-    /* Cardápio Section */
-    .menu-section-title {
-        text-align: center;
-        color: var(--green-text);
-        font-size: 1.8rem;
         font-weight: 700;
+        color: var(--text-main);
         margin-bottom: 16px;
     }
 
-    .dev-note {
-        color: #ff00ff;
-        font-size: 0.8rem;
+    .btn-outline {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #ced4da;
+        background-color: transparent;
+        border-radius: 12px;
         font-weight: 600;
-        margin-bottom: 12px;
-        display: block;
-    }
-
-    .meal-type {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--text-main);
-        margin-bottom: 12px;
-    }
-
-    .menu-list {
-        list-style: none;
-        margin-left: 0;
-    }
-
-    .menu-list li {
-        position: relative;
-        padding-left: 16px;
-        margin-bottom: 8px;
-        color: var(--text-main);
         font-size: 1rem;
-    }
-
-    .menu-list li::before {
-        content: "*";
-        position: absolute;
-        left: 0;
-        top: 2px;
         color: var(--text-main);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        margin-top: 16px;
     }
 
-    /* Botão de Ação (Fixo na parte inferior) */
-    .action-container {
-        margin-top: auto; /* Empurra o botão para o fundo */
-        padding-top: 20px;
+    .btn-outline:active { background-color: #f8f9fa; }
+    .btn-outline.success { border-color: var(--green-primary); color: var(--green-primary); background-color: rgba(43, 147, 72, 0.05); }
+
+    .queue-status-display { display: flex; align-items: flex-start; gap: 12px; }
+    .status-dot { width: 16px; height: 16px; border-radius: 50%; background-color: #ffb703; margin-top: 5px; flex-shrink: 0; }
+    .queue-info h3 { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+    .queue-info p { font-size: 0.95rem; color: #6c757d; }
+
+    .queue-dropdown { display: none; flex-direction: column; gap: 8px; margin-top: 16px; }
+    .queue-dropdown.active { display: flex; animation: fadeInDown 0.3s ease forwards; }
+
+    .dropdown-item {
+        background-color: #ffffff; border-radius: 12px; padding: 14px 16px;
+        display: flex; justify-content: space-between; align-items: center;
+        font-weight: 600; font-size: 1rem; cursor: pointer; border: 1px solid var(--border-color);
     }
+    .dropdown-item:active { transform: scale(0.98); background-color: #f8f9fa; }
+
+    .color-mp { color: #2b9348; } .color-p { color: #38b000; }
+    .color-m { color: #ffb703; } .color-l { color: #fb8500; } .color-ml { color: #d00000; }
+
+    .menu-short p { font-size: 1rem; color: #495057; margin-bottom: 6px; }
+    .menu-short strong { color: var(--text-main); }
+
+    .menu-full { display: none; flex-direction: column; gap: 16px; animation: fadeInDown 0.3s ease forwards; }
+    .menu-full.active { display: flex; }
+
+    .menu-item-group h4 { font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+    .menu-item-group p { font-size: 0.95rem; color: #6c757d; margin-bottom: 8px; }
+    .menu-divider { height: 1px; background-color: #f1f3f5; margin: 4px 0; }
+
+    .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag { padding: 4px 10px; border-radius: 16px; font-size: 0.75rem; font-weight: 700; }
+    .tag-blue { background-color: #e7f5ff; color: #1971c2; }
+    .tag-yellow { background-color: #fff9db; color: #b08800; }
+
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .action-container { margin-top: auto; padding-top: 10px; }
 </style>
 
 <div class="dashboard-view">
@@ -125,27 +113,96 @@
     <header class="brand-header">
         <div class="brand-logo">
             <img src="assets/logo.png" alt="Logo Bandecando" class="dashboard-logo-img">
+            Bandecando
         </div>
-        <p class="brand-subtitle">Restaurante Setorial I • Terça-feira</p>
+        <p class="brand-subtitle" id="dashboard-header-subtitle">Carregando...</p>
     </header>
 
-    <section class="feature-card" onclick="nav('fila')">
-        <h2 class="queue-title">Como está a fila?</h2>
-        <div class="queue-status-box">
-            <span class="queue-status-text">Muito pequena</span>
+    <section class="modern-card">
+        <h2 class="card-title">Monitor de Fila</h2>
+        <div class="queue-status-display">
+            <div class="status-dot"></div>
+            <div class="queue-info">
+                <h3>Média (15-25 min)</h3>
+                <p>Atualizado há 5 min</p>
+            </div>
+        </div>
+
+        <button id="btn-report-queue" class="btn-outline" onclick="window.toggleQueueDropdown()">
+            Reportar fila atual
+        </button>
+
+        <div id="queue-dropdown" class="queue-dropdown">
+            <div class="dropdown-item color-mp" onclick="window.submitQueueReport()">
+                Muito pequena <span style="color: black;">↓</span>
+            </div>
+            <div class="dropdown-item color-p" onclick="window.submitQueueReport()">
+                Pequena <span style="color: black;">↓</span>
+            </div>
+            <div class="dropdown-item color-m" onclick="window.submitQueueReport()">
+                Média <span style="color: black;">↓</span>
+            </div>
+            <div class="dropdown-item color-l" onclick="window.submitQueueReport()">
+                Longa <span style="color: black;">↓</span>
+            </div>
+            <div class="dropdown-item color-ml" onclick="window.submitQueueReport()">
+                Muito longa <span style="color: black;">↓</span>
+            </div>
         </div>
     </section>
 
-    <h2 class="menu-section-title">Cardápio</h2>
-    <section class="feature-card" onclick="nav('cardapio')">
-        <span class="dev-note">faz engual o do gemini</span>
+    <section class="modern-card">
+        <h2 class="card-title">Cardápio Resumido</h2>
         
-        <h3 class="meal-type">Almoço</h3>
-        <ul class="menu-list">
-            <li>Iscas de Frango Aceboladas</li>
-            <li>Estrogonofe de Grão-de-bico (Veg)</li>
-            <li>Arroz, Feijão, Salada</li>
-        </ul>
+        <div id="menu-short" class="menu-short">
+            <p><strong>Principal:</strong> Iscas de Frango</p>
+            <p><strong>Vegano:</strong> Estrogonofe de Grão-de-bico</p>
+        </div>
+
+        <div id="menu-full" class="menu-full">
+            <div class="menu-item-group">
+                <h4>Prato Principal</h4>
+                <p>Iscas de Frango Aceboladas</p>
+                <div class="tags-container">
+                    <span class="tag tag-blue">Proteína</span>
+                </div>
+            </div>
+            <div class="menu-divider"></div>
+            
+            <div class="menu-item-group">
+                <h4>Opção Vegetariana</h4>
+                <p>Estrogonofe de Grão-de-bico</p>
+                <div class="tags-container">
+                    <span class="tag tag-blue">Vegano</span>
+                    <span class="tag tag-yellow">Contém Soja</span>
+                </div>
+            </div>
+            <div class="menu-divider"></div>
+            
+            <div class="menu-item-group">
+                <h4>Guarnições</h4>
+                <p>Arroz Branco, Arroz Integral, Feijão Carioca, Batata Palha</p>
+            </div>
+            <div class="menu-divider"></div>
+
+            <div class="menu-item-group">
+                <h4>Salada</h4>
+                <p>Alface, Tomate e Cenoura ralada</p>
+            </div>
+            <div class="menu-divider"></div>
+
+            <div class="menu-item-group">
+                <h4>Sobremesa</h4>
+                <p>Laranja ou Doce de Leite</p>
+                <div class="tags-container">
+                    <span class="tag tag-yellow">Contém Lactose</span>
+                </div>
+            </div>
+        </div>
+
+        <button id="btn-toggle-menu" class="btn-outline" onclick="window.toggleMenu()">
+            Ver cardápio completo
+        </button>
     </section>
 
     <div class="action-container">
@@ -153,3 +210,61 @@
     </div>
 
 </div>
+
+<script>
+    // Configura o cabeçalho ao carregar a página
+    window.initDashboard = function() {
+        // Pega o RU escolhido ou um fallback de segurança
+        const ruSelecionado = localStorage.getItem('bandecando_selected_ru') || 'Restaurante Setorial I';
+        
+        // Arrays para pegar o dia da semana atual
+        const diasSemana = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+        const hoje = diasSemana[new Date().getDay()];
+
+        // Atualiza a interface
+        document.getElementById('dashboard-header-subtitle').innerText = `${ruSelecionado} • ${hoje}`;
+    };
+
+    // Fila: Expande ou recolhe as opções
+    window.toggleQueueDropdown = function() {
+        const dropdown = document.getElementById('queue-dropdown');
+        dropdown.classList.toggle('active');
+    };
+
+    // Fila: Confirma o envio e dá feedback ao usuário
+    window.submitQueueReport = function() {
+        const dropdown = document.getElementById('queue-dropdown');
+        const btn = document.getElementById('btn-report-queue');
+
+        dropdown.classList.remove('active');
+
+        const originalText = "Reportar fila atual";
+        btn.innerText = 'Reporte recebido! ✅';
+        btn.classList.add('success');
+
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.classList.remove('success');
+        }, 3000);
+    };
+
+    // Cardápio: Alterna entre visão resumida e completa
+    window.toggleMenu = function() {
+        const shortMenu = document.getElementById('menu-short');
+        const fullMenu = document.getElementById('menu-full');
+        const btn = document.getElementById('btn-toggle-menu');
+
+        if (fullMenu.classList.contains('active')) {
+            fullMenu.classList.remove('active');
+            shortMenu.style.display = 'block';
+            btn.innerText = 'Ver cardápio completo';
+        } else {
+            fullMenu.classList.add('active');
+            shortMenu.style.display = 'none';
+            btn.innerText = 'Recolher cardápio';
+        }
+    };
+
+    // Chama a inicialização automaticamente
+    window.initDashboard();
+</script>

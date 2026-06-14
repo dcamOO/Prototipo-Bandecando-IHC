@@ -18,7 +18,7 @@ async function nav(sceneId) {
     if (!arquivo) return console.error('Rota não encontrada:', sceneId);
 
     try {
-        const response = await fetch(arquivo);
+        const response = await fetch(arquivo, { cache: 'no-store' });
         if (!response.ok) throw new Error('Erro ao carregar a cena');
         
         const html = await response.text();
