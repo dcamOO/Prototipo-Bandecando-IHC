@@ -27,8 +27,16 @@
         font-size: 1.05rem; font-weight: 700; color: var(--text-main);
         margin: 6px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #eef0f2;
     }
-    .section-empty { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; font-style: italic; }
+    .section-empty { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px; font-style: italic; }
     .section-gap { height: 26px; }
+
+    .btn-empty-action {
+        width: 100%; padding: 13px; margin-bottom: 10px;
+        border: 1px solid var(--green-primary); background-color: rgba(43,147,72,0.06);
+        color: var(--green-primary); border-radius: var(--radius-btn);
+        font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-empty-action:active { transform: scale(0.99); background-color: rgba(43,147,72,0.12); }
 
     .mygroup-card {
         background-color: var(--bg-card); border: 1px solid var(--border-color);
@@ -220,7 +228,9 @@
         const lista = document.getElementById('participo-list');
         lista.innerHTML = '';
         if (grupos.length === 0) {
-            lista.innerHTML = '<p class="section-empty">Você ainda não entrou em nenhum grupo.</p>';
+            lista.innerHTML =
+                '<p class="section-empty">Você ainda não entrou em nenhum grupo.</p>' +
+                '<button class="btn-empty-action" onclick="nav(\'encontrar-grupos\')">Encontrar grupos</button>';
             return;
         }
         grupos.forEach(g => {
@@ -270,7 +280,9 @@
         const lista = document.getElementById('criei-list');
         lista.innerHTML = '';
         if (grupos.length === 0) {
-            lista.innerHTML = '<p class="section-empty">Você ainda não criou nenhum grupo.</p>';
+            lista.innerHTML =
+                '<p class="section-empty">Você ainda não criou nenhum grupo.</p>' +
+                '<button class="btn-empty-action" onclick="nav(\'criar-grupo\')">+ Criar novo grupo</button>';
             return;
         }
         grupos.forEach(g => {
