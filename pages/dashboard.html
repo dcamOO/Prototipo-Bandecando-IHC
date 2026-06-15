@@ -91,6 +91,19 @@
     .menu-short p { font-size: 1rem; color: #495057; margin-bottom: 6px; }
     .menu-short strong { color: var(--text-main); }
 
+    .menu-day-label { font-size: 0.85rem; color: var(--text-muted); margin: -8px 0 14px; }
+    .day-selector { display: flex; gap: 6px; margin-bottom: 16px; }
+    .day-chip {
+        flex: 1; padding: 8px 4px; border-radius: 10px;
+        border: 1px solid var(--border-color); background: #fff;
+        color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
+        cursor: pointer; transition: all 0.2s;
+        display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .day-chip-date { font-size: 0.7rem; font-weight: 600; opacity: 0.85; }
+    .day-chip.active { border-color: var(--green-primary); background: #d8f3dc; color: var(--green-primary); }
+    .day-chip:active { transform: scale(0.97); }
+
     .menu-full { display: none; flex-direction: column; gap: 16px; animation: fadeInDown 0.3s ease forwards; }
     .menu-full.active { display: flex; }
 
@@ -198,53 +211,13 @@
     </section>
 
     <section class="modern-card">
-        <h2 class="card-title">Cardápio Resumido</h2>
-        
-        <div id="menu-short" class="menu-short">
-            <p><strong>Principal:</strong> Iscas de Frango</p>
-            <p><strong>Vegano:</strong> Estrogonofe de Grão-de-bico</p>
-        </div>
+        <h2 class="card-title">Cardápio</h2>
+        <p class="menu-day-label" id="menu-day-label"></p>
 
-        <div id="menu-full" class="menu-full">
-            <div class="menu-item-group">
-                <h4>Prato Principal</h4>
-                <p>Iscas de Frango Aceboladas</p>
-                <div class="tags-container">
-                    <span class="tag tag-blue">Proteína</span>
-                </div>
-            </div>
-            <div class="menu-divider"></div>
-            
-            <div class="menu-item-group">
-                <h4>Opção Vegetariana</h4>
-                <p>Estrogonofe de Grão-de-bico</p>
-                <div class="tags-container">
-                    <span class="tag tag-blue">Vegano</span>
-                    <span class="tag tag-yellow">Contém Soja</span>
-                </div>
-            </div>
-            <div class="menu-divider"></div>
-            
-            <div class="menu-item-group">
-                <h4>Guarnições</h4>
-                <p>Arroz Branco, Arroz Integral, Feijão Carioca, Batata Palha</p>
-            </div>
-            <div class="menu-divider"></div>
+        <div class="day-selector" id="day-selector"></div>
 
-            <div class="menu-item-group">
-                <h4>Salada</h4>
-                <p>Alface, Tomate e Cenoura ralada</p>
-            </div>
-            <div class="menu-divider"></div>
-
-            <div class="menu-item-group">
-                <h4>Sobremesa</h4>
-                <p>Laranja ou Doce de Leite</p>
-                <div class="tags-container">
-                    <span class="tag tag-yellow">Contém Lactose</span>
-                </div>
-            </div>
-        </div>
+        <div id="menu-short" class="menu-short"></div>
+        <div id="menu-full" class="menu-full"></div>
 
         <button id="btn-toggle-menu" class="btn-outline" onclick="window.toggleMenu()">
             Ver cardápio completo
@@ -271,14 +244,69 @@
         // Atualiza a interface
         document.getElementById('dashboard-header-subtitle').innerText = `${ruSelecionado} • ${hoje}`;
 
-        // Habilita "Meus grupos" só se o usuário já criou ao menos um grupo
-        const temGrupos = window.BandecandoData.getMyGroups().length > 0;
+        // Habilita "Meus grupos" se o usuário criou OU entrou em algum grupo
+        const temGrupos = window.BandecandoData.hasAnyGroup();
         const btnMeus = document.getElementById('btn-meus-grupos');
         btnMeus.classList.toggle('enabled', temGrupos);
+
+        // Cardápio: datas da semana atual (Seg–Sex; no fim de semana, próxima semana)
+        window.WEEK_DATES = window.BandecandoData.weekDatesForMenu();
+        // Cardápio: começa no dia de hoje
+        window.SELECTED_DAY = window.BandecandoData.todayDayKey();
+        window.renderDaySelector();
+        window.renderMenu();
+    };
+
+    // Seletor de dia do cardápio
+    window.renderDaySelector = function() {
+        const D = window.BandecandoData;
+        const box = document.getElementById('day-selector');
+        box.innerHTML = '';
+        D.MENU_DAYS.forEach(d => {
+            const chip = document.createElement('button');
+            chip.className = 'day-chip' + (d.key === window.SELECTED_DAY ? ' active' : '');
+            const dm = D.formatDayMonth(window.WEEK_DATES[d.key]);
+            chip.innerHTML = `${d.label}<span class="day-chip-date">${dm}</span>`;
+            chip.onclick = () => { window.SELECTED_DAY = d.key; window.renderDaySelector(); window.renderMenu(); };
+            box.appendChild(chip);
+        });
+    };
+
+    // Renderiza o cardápio do RU selecionado para o dia escolhido
+    window.renderMenu = function() {
+        const D = window.BandecandoData;
+        const ru = localStorage.getItem('bandecando_selected_ru') || D.RUS[0];
+        const dia = D.MENU_DAYS.find(d => d.key === window.SELECTED_DAY);
+        const m = D.getMenu(ru, window.SELECTED_DAY);
+
+        const dataBR = D.formatDateBR(window.WEEK_DATES[window.SELECTED_DAY]);
+        document.getElementById('menu-day-label').innerText =
+            dia ? `${dia.full} • ${dataBR}` : '';
+
+        function tags(arr) {
+            if (!arr || !arr.length) return '';
+            return '<div class="tags-container">' + arr.map(t =>
+                `<span class="tag ${t.indexOf('Contém') === 0 ? 'tag-yellow' : 'tag-blue'}">${t}</span>`).join('') + '</div>';
+        }
+
+        document.getElementById('menu-short').innerHTML =
+            `<p><strong>Principal:</strong> ${m.principal}</p>
+             <p><strong>Vegetariano:</strong> ${m.vegetariano}</p>`;
+
+        document.getElementById('menu-full').innerHTML =
+            `<div class="menu-item-group"><h4>Prato Principal</h4><p>${m.principal}</p>${tags(m.principalTags)}</div>
+             <div class="menu-divider"></div>
+             <div class="menu-item-group"><h4>Opção Vegetariana</h4><p>${m.vegetariano}</p>${tags(m.vegTags)}</div>
+             <div class="menu-divider"></div>
+             <div class="menu-item-group"><h4>Guarnições</h4><p>${m.guarnicoes}</p></div>
+             <div class="menu-divider"></div>
+             <div class="menu-item-group"><h4>Salada</h4><p>${m.salada}</p></div>
+             <div class="menu-divider"></div>
+             <div class="menu-item-group"><h4>Sobremesa</h4><p>${m.sobremesa}</p>${tags(m.sobremesaTags)}</div>`;
     };
 
     window.goMeusGrupos = function() {
-        if (window.BandecandoData.getMyGroups().length > 0) nav('meus-grupos');
+        if (window.BandecandoData.hasAnyGroup()) nav('meus-grupos');
     };
 
     // Fila: Expande ou recolhe as opções

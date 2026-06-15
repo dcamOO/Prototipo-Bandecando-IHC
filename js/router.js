@@ -11,7 +11,8 @@ const rotas = {
     'grupos': 'pages/grupos.html',
     'grupo': 'pages/grupo.html',
     'criar-grupo': 'pages/criar-grupo.html',
-    'meus-grupos': 'pages/meus-grupos.html'
+    'meus-grupos': 'pages/meus-grupos.html',
+    'encontrar-grupos': 'pages/encontrar-grupos.html'
 };
 
 async function nav(sceneId) {

@@ -1,0 +1,194 @@
+<style>
+    .find-view {
+        padding: var(--spacing-main);
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        padding-bottom: 40px;
+    }
+
+    .find-topbar {
+        position: relative;
+        display: flex; align-items: center; justify-content: center;
+        margin-top: 10px; min-height: 40px; margin-bottom: 8px;
+    }
+    .btn-back {
+        position: absolute; left: 0; top: 50%;
+        transform: translateY(-50%);
+        background: none; border: none;
+        width: 40px; height: 40px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; border-radius: 50%;
+        transition: background-color 0.2s;
+    }
+    .btn-back:active { background-color: #e9ecef; }
+    .btn-back svg {
+        width: 24px; height: 24px;
+        stroke: var(--text-main); stroke-width: 2.2;
+        fill: none; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .find-title {
+        font-size: 1.3rem; font-weight: 700; color: var(--green-text);
+    }
+
+    .filter-label { font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin: 14px 0 8px; }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+    .filter-chip {
+        background-color: #eef0f2; color: var(--text-muted);
+        font-size: 0.8rem; font-weight: 600;
+        padding: 6px 12px; border-radius: 16px; cursor: pointer;
+        border: 1px solid transparent; transition: all 0.2s;
+    }
+    .filter-chip.active {
+        background-color: #d8f3dc; color: var(--green-primary);
+        border-color: var(--green-primary);
+    }
+    .filter-clear {
+        background: none; border: none; color: var(--green-primary);
+        font-size: 0.8rem; font-weight: 700; cursor: pointer; padding: 4px 0;
+        margin-bottom: 10px; align-self: flex-start;
+    }
+
+    .find-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-card);
+        padding: 18px; margin-bottom: 16px;
+    }
+    .find-name { font-size: 1.1rem; font-weight: 700; color: var(--green-text); margin-bottom: 4px; }
+    .find-desc { font-size: 0.88rem; color: #6c757d; line-height: 1.4; margin-bottom: 10px; }
+    .find-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .find-chip { background-color: #d8f3dc; color: var(--green-primary); font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 12px; }
+
+    .find-status { font-size: 0.82rem; font-weight: 600; margin-bottom: 12px; }
+    .find-status.open { color: var(--green-primary); }
+    .find-status.closed { color: var(--text-muted); }
+
+    .find-actions { display: flex; gap: 8px; }
+    .find-btn {
+        flex: 1; padding: 11px; border-radius: 12px; font-weight: 600;
+        font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+    }
+    .find-btn.join { border: 1px solid var(--green-primary); background-color: rgba(43,147,72,0.06); color: var(--green-primary); }
+    .find-btn.join.is-member { border-color: var(--border-color); background-color: #f1f3f5; color: var(--text-muted); cursor: default; }
+    .find-btn.go { border: none; background-color: var(--green-primary); color: #fff; }
+    .find-btn:active { transform: scale(0.98); }
+
+    .empty-state { text-align: center; color: var(--text-muted); font-size: 0.95rem; padding: 24px 4px; }
+</style>
+
+<div class="find-view">
+
+    <div class="find-topbar">
+        <button class="btn-back" onclick="nav('grupos')" aria-label="Voltar">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <h1 class="find-title">Encontrar grupos</h1>
+    </div>
+
+    <p class="filter-label">Filtrar por interesse</p>
+    <div class="filter-chips" id="filter-chips"></div>
+    <button class="filter-clear" id="filter-clear" onclick="window.clearFilters()" style="display:none;">Limpar filtros</button>
+
+    <div id="find-list"></div>
+
+</div>
+
+<script>
+    window.SELECTED_INTERESTS = [];
+
+    window.initFind = function() {
+        const D = window.BandecandoData;
+        const chips = document.getElementById('filter-chips');
+        chips.innerHTML = '';
+        D.getAllInterests().forEach(i => {
+            const c = document.createElement('span');
+            c.className = 'filter-chip' + (window.SELECTED_INTERESTS.indexOf(i) !== -1 ? ' active' : '');
+            c.innerText = i;
+            c.onclick = () => window.toggleInterest(i);
+            chips.appendChild(c);
+        });
+        document.getElementById('filter-clear').style.display =
+            window.SELECTED_INTERESTS.length ? 'block' : 'none';
+        window.renderFindList();
+    };
+
+    window.toggleInterest = function(i) {
+        const idx = window.SELECTED_INTERESTS.indexOf(i);
+        if (idx === -1) window.SELECTED_INTERESTS.push(i);
+        else window.SELECTED_INTERESTS.splice(idx, 1);
+        window.initFind();
+    };
+    window.clearFilters = function() {
+        window.SELECTED_INTERESTS = [];
+        window.initFind();
+    };
+
+    window.renderFindList = function() {
+        const D = window.BandecandoData;
+        const sel = window.SELECTED_INTERESTS;
+        let grupos = D.getAllGroupsRaw();
+        if (sel.length) {
+            grupos = grupos.filter(g => (g.interests || []).some(i => sel.indexOf(i) !== -1));
+        }
+
+        const lista = document.getElementById('find-list');
+        lista.innerHTML = '';
+        if (grupos.length === 0) {
+            lista.innerHTML = '<div class="empty-state">Nenhum grupo encontrado para esses interesses.</div>';
+            return;
+        }
+
+        grupos.forEach(g => {
+            const openRUs = D.getGroupOpenRUs(g);
+            const aberto = openRUs.length > 0;
+            const sou = D.isMember(g.id);
+
+            const card = document.createElement('div');
+            card.className = 'find-card';
+
+            let html = `<h3 class="find-name">${g.name}</h3>`;
+            html += `<p class="find-desc">${g.desc}</p>`;
+            if (g.interests && g.interests.length) {
+                html += '<div class="find-chips">';
+                g.interests.forEach(i => { html += `<span class="find-chip">${i}</span>`; });
+                html += '</div>';
+            }
+
+            if (aberto) {
+                openRUs.forEach(ru => {
+                    const horarios = D.getMeetingsForGroupInRU(g, ru).map(m => m.time).join(', ');
+                    html += `<p class="find-status open">📍 Aberto hoje em ${ru} • ${horarios}</p>`;
+                });
+            } else {
+                html += `<p class="find-status closed">Sem encontro aberto hoje</p>`;
+            }
+
+            html += '<div class="find-actions">';
+            html += sou
+                ? '<button class="find-btn join is-member">✓ Você participa</button>'
+                : `<button class="find-btn join" onclick="window.entrar('${g.id}')">Entrar no grupo</button>`;
+            if (aberto) {
+                html += `<button class="find-btn go" onclick="window.verGrupo('${g.id}')">Confirmar presença</button>`;
+            } else {
+                html += `<button class="find-btn go" onclick="window.verGrupo('${g.id}')">Ver grupo</button>`;
+            }
+            html += '</div>';
+
+            card.innerHTML = html;
+            lista.appendChild(card);
+        });
+    };
+
+    window.entrar = function(id) {
+        window.BandecandoData.joinGroup(id);
+        window.renderFindList();
+    };
+    window.verGrupo = function(id) {
+        localStorage.setItem('bandecando_selected_group_id', id);
+        localStorage.setItem('bandecando_group_origin', 'encontrar-grupos');
+        nav('grupo');
+    };
+
+    window.initFind();
+</script>

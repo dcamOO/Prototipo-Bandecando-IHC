@@ -139,6 +139,7 @@
         margin-bottom: 10px;
     }
     .meeting-count { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+    .meeting-point { font-size: 0.82rem; font-weight: 600; color: var(--green-primary); margin-bottom: 10px; }
 
     .meeting-avatars { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -155,7 +156,42 @@
     .group-action {
         margin-top: auto;
         padding-top: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
     }
+    .action-note {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        background: #f1f3f5;
+        border-radius: 12px;
+        padding: 14px;
+    }
+    .member-tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: #d8f3dc; color: var(--green-primary);
+        font-size: 0.8rem; font-weight: 700;
+        padding: 5px 12px; border-radius: 16px;
+        align-self: flex-start;
+    }
+    .btn-outline-green {
+        width: 100%; padding: 16px;
+        border: 1px solid var(--green-primary);
+        background-color: rgba(43,147,72,0.06);
+        color: var(--green-primary);
+        border-radius: var(--radius-btn);
+        font-weight: 600; font-size: 1.05rem; cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-outline-green:active { transform: scale(0.99); background-color: rgba(43,147,72,0.12); }
+    .btn-leave {
+        width: 100%; padding: 12px;
+        border: none; background: none;
+        color: #d00000; font-size: 0.9rem; font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-leave:active { text-decoration: underline; }
 
     /* ============ BALÕES (MODAL) ============ */
     .overlay {
@@ -200,6 +236,20 @@
         text-transform: uppercase;
         letter-spacing: 0.03em;
     }
+
+    .btn-skip-time {
+        width: 100%;
+        margin-top: 16px;
+        padding: 12px;
+        border: none;
+        background: none;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+    .btn-skip-time:active { color: var(--text-main); }
 
     .time-option.empty span { color: var(--text-muted); }
     .time-pill {
@@ -295,6 +345,11 @@
         line-height: 1.4;
     }
 
+    .confirm-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .confirm-actions button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none; }
+    .btn-cancel { background-color: #e9ecef; color: var(--text-main); }
+    .btn-danger { background-color: #d00000; color: #fff; }
+
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes popIn {
         from { opacity: 0; transform: scale(0.9); }
@@ -304,7 +359,7 @@
 
 <div class="group-view">
 
-    <button class="btn-back" onclick="nav('grupos')" aria-label="Voltar">
+    <button class="btn-back" onclick="window.goBack()" aria-label="Voltar">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
     </button>
 
@@ -329,9 +384,7 @@
         <div id="meetings-list"></div>
     </section>
 
-    <div class="group-action">
-        <button class="btn-primary" onclick="window.openTimeBalloon()">Quero me juntar ao grupo</button>
-    </div>
+    <div class="group-action" id="group-action"></div>
 
     <!-- Balão: Escolha um horário (preenchido dinamicamente) -->
     <div class="overlay" id="overlay-time">
@@ -341,6 +394,28 @@
             <div id="time-options"></div>
             <p class="balloon-subtitle" id="new-time-label">Abrir outro horário</p>
             <div id="new-time-options"></div>
+            <button class="btn-skip-time" onclick="window.joinWithoutTime()">Não confirmar horário agora</button>
+        </div>
+    </div>
+
+    <!-- Balão: Escolha o ponto de encontro (ao abrir um horário novo) -->
+    <div class="overlay" id="overlay-point">
+        <div class="balloon">
+            <button class="balloon-close" onclick="window.closeBalloons()">&times;</button>
+            <h2 class="balloon-title">Escolha o ponto de encontro</h2>
+            <div id="point-options"></div>
+        </div>
+    </div>
+
+    <!-- Balão: Sair do grupo -->
+    <div class="overlay" id="overlay-leave">
+        <div class="balloon confirm-balloon">
+            <h2 class="confirm-title" style="color:var(--text-main);">Sair do grupo?</h2>
+            <p class="confirm-text">Você deixará de participar e sua presença será removida.</p>
+            <div class="confirm-actions">
+                <button class="btn-cancel" onclick="window.cancelLeave()">Cancelar</button>
+                <button class="btn-danger" onclick="window.confirmLeave()">Sair</button>
+            </div>
         </div>
     </div>
 
@@ -359,6 +434,11 @@
 <script>
     window.GROUP_STATE = { id: null, ru: null, name: '' };
 
+    // Volta para a tela de origem (grupos / meus-grupos / encontrar-grupos)
+    window.goBack = function() {
+        nav(localStorage.getItem('bandecando_group_origin') || 'grupos');
+    };
+
     function avatarLabel(nome) {
         return nome === window.BandecandoData.ME ? 'Eu' : nome;
     }
@@ -366,11 +446,15 @@
     window.initGroup = function() {
         const D = window.BandecandoData;
         const id = localStorage.getItem('bandecando_selected_group_id');
-        const ru = D.getSelectedRU();
         const grupo = D.getGroupById(id);
 
         if (!grupo) { nav('grupos'); return; }
 
+        // RU a exibir: se o grupo está aberto em vários RUs (1 por turno),
+        // prioriza o RU selecionado; senão, o primeiro RU aberto; senão, o selecionado.
+        const openRUs = D.getGroupOpenRUs(grupo);
+        const selected = D.getSelectedRU();
+        const ru = openRUs.indexOf(selected) !== -1 ? selected : (openRUs[0] || D.getGroupRU(grupo) || selected);
         window.GROUP_STATE = { id: grupo.id, ru: ru, name: grupo.name };
 
         document.getElementById('group-name').innerText = grupo.name;
@@ -386,8 +470,8 @@
             interestsBox.appendChild(tag);
         });
 
-        // Membros
-        const membros = grupo.members || [];
+        // Membros (inclui "Eu" se eu participo)
+        const membros = D.getMembersWithMe(grupo);
         document.getElementById('group-members-title').innerText = `Membros (${membros.length})`;
         const membersBox = document.getElementById('group-members');
         membersBox.innerHTML = '';
@@ -399,6 +483,68 @@
         });
 
         window.renderMeetings();
+        window.renderAction();
+    };
+
+    // Decide a ação principal conforme: membro? dono? grupo aberto?
+    window.renderAction = function() {
+        const D = window.BandecandoData;
+        const grupo = D.getGroupById(window.GROUP_STATE.id);
+        const sou = D.isMember(grupo.id);
+        const aberto = D.isGroupOpen(grupo);
+        const box = document.getElementById('group-action');
+
+        if (!sou) {
+            // Não membro: um único botão para se juntar
+            let html = '';
+            if (aberto) {
+                html += '<button class="btn-primary" onclick="window.openTimeBalloon()">Desejo me juntar ao grupo</button>';
+            } else {
+                html += '<button class="btn-primary" onclick="window.handleJoin()">Desejo me juntar ao grupo</button>';
+                html += '<div class="action-note">Este grupo ainda não tem encontro aberto hoje. Você poderá confirmar presença quando abrir.</div>';
+            }
+            box.innerHTML = html;
+            return;
+        }
+
+        // Membro
+        let html = '<div class="member-tag">✓ Você participa deste grupo</div>';
+        if (aberto) {
+            html += '<button class="btn-primary" onclick="window.openTimeBalloon()">Confirmar presença em um horário</button>';
+        } else {
+            html += '<div class="action-note">O dono ainda não abriu um encontro hoje. Quando abrir, você poderá confirmar presença.</div>';
+        }
+        // Dono não "sai" do próprio grupo (gerencia em Meus grupos)
+        if (!grupo.owner) {
+            html += '<button class="btn-leave" onclick="window.handleLeave()">Sair do grupo</button>';
+        }
+        box.innerHTML = html;
+    };
+
+    // Entrar no grupo (vira membro) — sem confirmar presença ainda
+    window.handleJoin = function() {
+        window.BandecandoData.joinGroup(window.GROUP_STATE.id);
+        window.initGroup(); // re-renderiza no estado de membro
+    };
+
+    // No balão: entrar no grupo sem confirmar nenhum horário agora
+    window.joinWithoutTime = function() {
+        window.BandecandoData.joinGroup(window.GROUP_STATE.id);
+        document.getElementById('overlay-time').classList.remove('active');
+        window.initGroup();
+    };
+
+    // Sair do grupo (com confirmação)
+    window.handleLeave = function() {
+        document.getElementById('overlay-leave').classList.add('active');
+    };
+    window.confirmLeave = function() {
+        window.BandecandoData.leaveGroup(window.GROUP_STATE.id);
+        document.getElementById('overlay-leave').classList.remove('active');
+        window.goBack();
+    };
+    window.cancelLeave = function() {
+        document.getElementById('overlay-leave').classList.remove('active');
     };
 
     // Lista "Horários de hoje" com quem vai a cada horário
@@ -437,6 +583,14 @@
             });
 
             row.appendChild(head);
+
+            if (m.point) {
+                const pt = document.createElement('div');
+                pt.className = 'meeting-point';
+                pt.innerText = '📍 Ponto de encontro: ' + m.point;
+                row.appendChild(pt);
+            }
+
             row.appendChild(avs);
             lista.appendChild(row);
         });
@@ -448,7 +602,6 @@
         const grupo = D.getGroupById(window.GROUP_STATE.id);
         const ru = window.GROUP_STATE.ru;
         const meetings = D.getMeetingsForGroupInRU(grupo, ru);
-        const meuHorario = D.getMyPresenceTime(window.GROUP_STATE.id, ru);
 
         // Horários já abertos (entrar)
         const box = document.getElementById('time-options');
@@ -458,7 +611,7 @@
             opt.className = 'time-option';
             opt.onclick = () => window.confirmPresence(m.time);
             const left = document.createElement('span');
-            const jaEstou = m.time === meuHorario;
+            const jaEstou = D.isMyPresence(window.GROUP_STATE.id, ru, m.time);
             left.innerHTML = `${m.time} ${jaEstou
                 ? '<span class="time-pill">você está aqui</span>'
                 : `· ${m.attendees.length} ${m.attendees.length === 1 ? 'pessoa' : 'pessoas'}`}`;
@@ -477,7 +630,7 @@
         novos.forEach(t => {
             const opt = document.createElement('div');
             opt.className = 'time-option empty';
-            opt.onclick = () => window.confirmPresence(t);
+            opt.onclick = () => window.pickNewTime(t);
             opt.innerHTML = `<span>${t}</span><div class="time-radio"></div>`;
             newBox.appendChild(opt);
         });
@@ -485,12 +638,30 @@
         document.getElementById('overlay-time').classList.add('active');
     };
 
-    window.confirmPresence = function(horario) {
+    // Abrir um horário novo: pede o ponto de encontro antes de confirmar
+    window.pickNewTime = function(horario) {
         const D = window.BandecandoData;
-        D.confirmPresence(window.GROUP_STATE.id, window.GROUP_STATE.ru, horario);
+        const box = document.getElementById('point-options');
+        box.innerHTML = '';
+        D.MEETING_POINTS.forEach(p => {
+            const opt = document.createElement('div');
+            opt.className = 'time-option';
+            opt.onclick = () => window.confirmPresence(horario, p);
+            opt.innerHTML = `<span>${p}</span><div class="time-radio"></div>`;
+            box.appendChild(opt);
+        });
+        document.getElementById('overlay-time').classList.remove('active');
+        document.getElementById('overlay-point').classList.add('active');
+    };
+
+    // Entrar em horário já existente (point indefinido) ou novo (com point escolhido)
+    window.confirmPresence = function(horario, point) {
+        const D = window.BandecandoData;
+        D.confirmPresence(window.GROUP_STATE.id, window.GROUP_STATE.ru, horario, point);
         window.renderMeetings(); // some do horário anterior e aparece no novo
 
         document.getElementById('overlay-time').classList.remove('active');
+        document.getElementById('overlay-point').classList.remove('active');
         document.getElementById('confirm-text').innerText =
             `O grupo "${window.GROUP_STATE.name}" vai se encontrar às ${horario} no ${window.GROUP_STATE.ru}.`;
         document.getElementById('overlay-confirm').classList.add('active');
@@ -498,6 +669,7 @@
 
     window.closeBalloons = function() {
         document.getElementById('overlay-time').classList.remove('active');
+        document.getElementById('overlay-point').classList.remove('active');
         document.getElementById('overlay-confirm').classList.remove('active');
     };
 

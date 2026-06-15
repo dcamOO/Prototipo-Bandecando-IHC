@@ -259,22 +259,12 @@
     </div>
 
     <div class="field-group">
-        <label class="field-label">Ponto de encontro <span class="req">*</span></label>
-        <select id="cg-ponto" class="field-select">
-            <option value="" selected disabled>Selecione um ponto de encontro</option>
-            <option value="Entrada do RU">Entrada do RU</option>
-            <option value="Mesas externas">Mesas externas</option>
-            <option value="Início da fila">Início da fila</option>
-        </select>
-    </div>
-
-    <div class="field-group">
-        <label class="field-label">Horários <span class="req">*</span></label>
-        <select id="cg-horario" class="field-select">
-            <option value="" selected disabled>Selecione os horários possíveis de encontro</option>
-            <option value="11:00">11:00</option>
-            <option value="12:00">12:00</option>
-            <option value="13:00">13:00</option>
+        <label class="field-label">Horários possíveis de encontro <span class="req">*</span></label>
+        <select id="cg-periodo-tipo" class="field-select">
+            <option value="" selected disabled>Selecione o período</option>
+            <option value="tarde">Tarde (11:00 – 13:30)</option>
+            <option value="noite">Noite (17:00 – 19:30)</option>
+            <option value="ambos">Tarde e noite</option>
         </select>
     </div>
 
@@ -301,7 +291,7 @@
             <option value="Debate">Debate</option>
         </select>
         <div class="interest-add-row">
-            <input type="text" id="cg-interesse-novo" class="field-input" placeholder="Ou crie um novo interesse"
+            <input type="text" id="cg-interesse-novo" class="field-input" placeholder=""
                    onkeydown="if(event.key==='Enter'){event.preventDefault();window.addCustomInterest();}">
             <button type="button" class="btn-add-interest" onclick="window.addCustomInterest()">Adicionar</button>
         </div>
@@ -313,7 +303,7 @@
         <textarea id="cg-descricao" class="field-textarea" placeholder="Breve descrição do grupo"></textarea>
     </div>
 
-    <p class="form-note">*Os grupos podem ter duração máxima de um semestre</p>
+    <p class="form-note">*Os grupos podem ter duração máxima de 6 meses</p>
 
     <p class="form-error" id="cg-error">Preencha todos os campos obrigatórios (*).</p>
 
@@ -340,7 +330,8 @@
         const D = window.BandecandoData;
         const hoje = D.todayISO();
         const periodo = document.getElementById('cg-periodo');
-        periodo.min = hoje;          // bloqueia datas anteriores a hoje
+        periodo.min = hoje;                    // bloqueia datas anteriores a hoje
+        periodo.max = D.maxGroupDateISO();     // no máximo 6 meses à frente
         window.cgInterests = [];
         window.renderChips();
         window.updatePeriodoHint();
@@ -401,13 +392,12 @@
     window.handleCreateGroup = function() {
         const D = window.BandecandoData;
         const nome = document.getElementById('cg-nome');
-        const ponto = document.getElementById('cg-ponto');
-        const horario = document.getElementById('cg-horario');
+        const periodoTipo = document.getElementById('cg-periodo-tipo');
         const periodo = document.getElementById('cg-periodo');
         const descricao = document.getElementById('cg-descricao');
         const errorMsg = document.getElementById('cg-error');
 
-        const obrigatorios = [nome, ponto, horario, periodo];
+        const obrigatorios = [nome, periodoTipo, periodo];
         obrigatorios.forEach(c => c.classList.remove('error'));
         errorMsg.style.display = 'none';
 
@@ -433,14 +423,37 @@
             return;
         }
 
-        D.createGroup({
+        // Duração máxima de 6 meses à frente
+        if (periodo.value > D.maxGroupDateISO()) {
+            periodo.classList.add('error');
+            errorMsg.innerText = `A duração máxima é de 6 meses (até ${D.formatDateBR(D.maxGroupDateISO())}).`;
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        // Nome não pode coincidir com outro grupo já existente
+        // (ignora maiúsc/minúsc e acentos: A = a = â = à = ã)
+        if (D.groupNameExists(nome.value)) {
+            nome.classList.add('error');
+            errorMsg.innerText = 'Já existe um grupo com esse nome. Escolha outro.';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        const resultado = D.createGroup({
             name: nome.value.trim(),
             desc: descricao.value.trim() || 'Grupo recém-criado. Venha participar!',
-            meetingPoint: ponto.value,
-            prefTime: horario.value,
+            periodType: periodoTipo.value,
             period: periodo.value,
             interests: window.cgInterests.slice()
         });
+
+        if (resultado && resultado.error === 'duplicate') {
+            nome.classList.add('error');
+            errorMsg.innerText = 'Já existe um grupo com esse nome. Escolha outro.';
+            errorMsg.style.display = 'block';
+            return;
+        }
 
         document.getElementById('overlay-created').classList.add('active');
     };

@@ -1,10 +1,8 @@
 <style>
     .meus-view {
         padding: var(--spacing-main);
-        display: flex;
-        flex-direction: column;
-        min-height: 100%;
-        padding-bottom: 40px;
+        display: flex; flex-direction: column;
+        min-height: 100%; padding-bottom: 40px;
     }
 
     .meus-topbar {
@@ -13,137 +11,121 @@
         margin-top: 10px; min-height: 40px;
     }
     .btn-back {
-        position: absolute; left: 0; top: 50%;
-        transform: translateY(-50%);
-        background: none; border: none;
-        width: 40px; height: 40px;
+        position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+        background: none; border: none; width: 40px; height: 40px;
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; border-radius: 50%;
-        transition: background-color 0.2s;
+        cursor: pointer; border-radius: 50%; transition: background-color 0.2s;
     }
     .btn-back:active { background-color: #e9ecef; }
-    .btn-back svg {
-        width: 24px; height: 24px;
-        stroke: var(--text-main); stroke-width: 2.2;
-        fill: none; stroke-linecap: round; stroke-linejoin: round;
-    }
+    .btn-back svg { width: 24px; height: 24px; stroke: var(--text-main); stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-    .brand-header { text-align: center; margin-top: 10px; margin-bottom: 26px; }
+    .brand-header { text-align: center; margin-top: 10px; margin-bottom: 22px; }
     .dashboard-logo-img { width: 120px; height: auto; object-fit: contain; }
     .page-title { font-size: 1.3rem; font-weight: 700; color: var(--green-text); margin-top: 12px; }
 
+    .section-head {
+        font-size: 1.05rem; font-weight: 700; color: var(--text-main);
+        margin: 6px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #eef0f2;
+    }
+    .section-empty { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px; font-style: italic; }
+    .section-gap { height: 26px; }
+
     .mygroup-card {
-        background-color: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-card);
-        padding: 20px; margin-bottom: 20px;
+        background-color: var(--bg-card); border: 1px solid var(--border-color);
+        border-radius: var(--radius-card); padding: 20px; margin-bottom: 16px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
-    .mygroup-name { font-size: 1.2rem; font-weight: 700; color: var(--green-text); margin-bottom: 6px; }
-    .mygroup-desc { font-size: 0.9rem; color: var(--text-muted); font-style: italic; line-height: 1.4; margin-bottom: 14px; }
-    .mygroup-info { font-size: 0.85rem; color: #495057; margin-bottom: 6px; }
+    .mygroup-name { font-size: 1.15rem; font-weight: 700; color: var(--green-text); margin-bottom: 6px; }
+    .mygroup-desc { font-size: 0.88rem; color: var(--text-muted); font-style: italic; line-height: 1.4; margin-bottom: 12px; }
+    .mygroup-info { font-size: 0.84rem; color: #495057; margin-bottom: 6px; }
     .mygroup-info strong { color: var(--text-main); }
 
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
-    .chip { background-color: #d8f3dc; color: var(--green-primary); font-size: 0.8rem; font-weight: 600; padding: 5px 12px; border-radius: 16px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; }
+    .chip { background-color: #d8f3dc; color: var(--green-primary); font-size: 0.78rem; font-weight: 600; padding: 5px 12px; border-radius: 16px; }
 
-    .open-banner {
-        background-color: #f1f8f3; border-radius: 12px;
-        padding: 12px 14px; margin: 12px 0;
-        font-size: 0.9rem; color: var(--green-primary); font-weight: 700;
+    .period-editor { margin: 10px 0 14px; }
+    .period-editor .lbl { font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+    .period-btns { display: flex; gap: 8px; }
+    .period-btn {
+        flex: 1; padding: 9px 6px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
+        border: 1px solid var(--border-color); background: #fff; color: var(--text-muted); cursor: pointer; transition: all 0.2s;
     }
+    .period-btn.active { border-color: var(--green-primary); background: #d8f3dc; color: var(--green-primary); }
+
+    .open-banner { background-color: #f1f8f3; border-radius: 12px; padding: 12px 14px; margin: 12px 0; font-size: 0.9rem; color: var(--green-primary); font-weight: 700; }
     .open-banner small { display: block; font-weight: 600; color: #5a8f6b; margin-top: 4px; }
-
-    .status-closed {
-        font-size: 0.85rem; color: var(--text-muted);
-        margin: 8px 0 14px; font-style: italic;
-    }
+    .status-closed { font-size: 0.84rem; color: var(--text-muted); margin: 8px 0 14px; font-style: italic; }
+    .status-line { font-size: 0.84rem; font-weight: 600; margin: 6px 0 12px; }
+    .status-line.open { color: var(--green-primary); }
+    .status-line.closed { color: var(--text-muted); }
 
     .action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
     .btn-sm {
-        flex: 1; min-width: 0;
-        padding: 11px 8px; border-radius: 12px;
-        border: 1px solid var(--green-primary);
-        background-color: rgba(43,147,72,0.06);
-        color: var(--green-primary);
-        font-weight: 600; font-size: 0.85rem;
-        cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        flex: 1; min-width: 0; padding: 11px 8px; border-radius: 12px;
+        border: 1px solid var(--green-primary); background-color: rgba(43,147,72,0.06);
+        color: var(--green-primary); font-weight: 600; font-size: 0.85rem; cursor: pointer;
+        transition: all 0.2s; white-space: nowrap;
     }
     .btn-sm:active { transform: scale(0.98); background-color: rgba(43,147,72,0.12); }
 
     .btn-open-encontro {
-        width: 100%; padding: 14px;
-        border: 1px solid var(--green-primary);
-        background-color: rgba(43,147,72,0.06);
-        color: var(--green-primary);
-        border-radius: var(--radius-btn);
-        font-weight: 700; font-size: 1rem; cursor: pointer;
+        width: 100%; padding: 14px; border: 1px solid var(--green-primary);
+        background-color: rgba(43,147,72,0.06); color: var(--green-primary);
+        border-radius: var(--radius-btn); font-weight: 700; font-size: 1rem; cursor: pointer;
         transition: all 0.2s; margin-bottom: 12px;
     }
     .btn-open-encontro:active { transform: scale(0.99); background-color: rgba(43,147,72,0.12); }
 
+    .btn-go {
+        width: 100%; padding: 12px; border: none; background-color: var(--green-primary);
+        color: #fff; border-radius: var(--radius-btn); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-go:active { transform: scale(0.99); opacity: 0.9; }
+
+    .btn-leave-sm {
+        width: 100%; padding: 11px; margin-top: 10px;
+        border: 1px solid #f1aeb5; background: transparent; color: #d00000;
+        border-radius: var(--radius-btn); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-leave-sm:active { background-color: #fff5f5; }
+
     .btn-delete {
-        width: 100%; padding: 11px;
-        border: 1px solid #f1aeb5; background-color: transparent;
-        color: #d00000; border-radius: var(--radius-btn);
-        font-weight: 600; font-size: 0.9rem; cursor: pointer;
-        transition: all 0.2s;
+        width: 100%; padding: 11px; border: 1px solid #f1aeb5; background-color: transparent;
+        color: #d00000; border-radius: var(--radius-btn); font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
     }
     .btn-delete:active { background-color: #fff5f5; }
 
-    .empty-state { text-align: center; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; padding: 20px 4px; }
-
     /* ============ BALÕES ============ */
     .overlay {
-        display: none;
-        position: fixed; top: 0; bottom: 0; left: 50%;
-        transform: translateX(-50%);
-        width: 100%; max-width: 414px;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 50; justify-content: center; align-items: center;
-        padding: var(--spacing-main);
+        display: none; position: fixed; top: 0; bottom: 0; left: 50%;
+        transform: translateX(-50%); width: 100%; max-width: 414px;
+        background-color: rgba(0,0,0,0.5); z-index: 50;
+        justify-content: center; align-items: center; padding: var(--spacing-main);
     }
     .overlay.active { display: flex; animation: fadeIn 0.25s ease forwards; }
-
     .balloon {
-        background-color: var(--bg-card);
-        border-radius: 20px; padding: 24px 20px;
-        width: 100%; max-width: 340px;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-        animation: popIn 0.25s ease forwards;
-        position: relative; max-height: 80vh; overflow-y: auto;
+        background-color: var(--bg-card); border-radius: 20px; padding: 24px 20px;
+        width: 100%; max-width: 340px; box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        animation: popIn 0.25s ease forwards; position: relative; max-height: 80vh; overflow-y: auto;
     }
-    .balloon-close {
-        position: absolute; top: 14px; right: 16px;
-        background: none; border: none; font-size: 1.4rem;
-        color: #999; cursor: pointer; line-height: 1;
-    }
+    .balloon-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 1.4rem; color: #999; cursor: pointer; line-height: 1; }
     .balloon-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 18px; }
 
     .time-option {
-        width: 100%; background-color: #f7f7f7;
-        border: 1px solid var(--border-color); border-radius: 12px;
-        padding: 14px 16px; margin-bottom: 12px;
-        display: flex; align-items: center; justify-content: space-between;
+        width: 100%; background-color: #f7f7f7; border: 1px solid var(--border-color); border-radius: 12px;
+        padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
         cursor: pointer; transition: background-color 0.2s, transform 0.1s;
     }
     .time-option:last-child { margin-bottom: 0; }
     .time-option:active { transform: scale(0.98); }
     .time-option span { font-size: 1.05rem; font-weight: 600; color: var(--green-text); }
-    .time-radio {
-        width: 20px; height: 20px; border-radius: 50%;
-        border: 2px solid #ced4da; flex-shrink: 0; transition: all 0.2s;
-    }
-    .time-option:active .time-radio {
-        border-color: var(--green-primary); background-color: var(--green-primary);
-        box-shadow: inset 0 0 0 3px var(--bg-card);
-    }
+    .time-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ced4da; flex-shrink: 0; transition: all 0.2s; }
+    .time-option:active .time-radio { border-color: var(--green-primary); background-color: var(--green-primary); box-shadow: inset 0 0 0 3px var(--bg-card); }
 
     .confirm-balloon { text-align: center; }
     .confirm-icon { width: 48px; height: auto; margin-bottom: 8px; }
     .confirm-title { color: var(--green-text); font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; }
     .confirm-text { font-size: 0.95rem; color: var(--text-main); line-height: 1.4; }
-
     .confirm-actions { display: flex; gap: 10px; margin-top: 20px; }
     .confirm-actions button { flex: 1; padding: 12px; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: none; }
     .btn-cancel { background-color: #e9ecef; color: var(--text-main); }
@@ -166,7 +148,11 @@
         <h1 class="page-title">Meus grupos</h1>
     </header>
 
-    <div id="mygroups-list"></div>
+    <h2 class="section-head">Grupos que participo</h2>
+    <div id="participo-list"></div>
+    <div class="section-gap"></div>
+    <h2 class="section-head">Grupos que criei</h2>
+    <div id="criei-list"></div>
 
     <!-- Balão: Escolha o RU -->
     <div class="overlay" id="overlay-ru">
@@ -186,7 +172,16 @@
         </div>
     </div>
 
-    <!-- Balão: confirmação (encontro aberto) -->
+    <!-- Balão: Escolha o ponto de encontro -->
+    <div class="overlay" id="overlay-point">
+        <div class="balloon">
+            <button class="balloon-close" onclick="window.closeAll()">&times;</button>
+            <h2 class="balloon-title">Ponto de encontro</h2>
+            <div id="point-options"></div>
+        </div>
+    </div>
+
+    <!-- Balão: confirmação -->
     <div class="overlay" id="overlay-done">
         <div class="balloon confirm-balloon">
             <button class="balloon-close" onclick="window.closeDone()">&times;</button>
@@ -196,7 +191,7 @@
         </div>
     </div>
 
-    <!-- Balão: confirmação de ação destrutiva (fechar/excluir) -->
+    <!-- Balão: ação destrutiva -->
     <div class="overlay" id="overlay-ask">
         <div class="balloon confirm-balloon">
             <h2 class="confirm-title" id="ask-title" style="color:var(--text-main);"></h2>
@@ -211,27 +206,78 @@
 </div>
 
 <script>
-    window.OPEN_STATE = { groupId: null, mode: null, ru: null };
+    window.OPEN_STATE = { groupId: null, ru: null, time: null };
 
     window.initMeusGrupos = function() {
-        const D = window.BandecandoData;
-        const grupos = D.getMyGroups();
-        const lista = document.getElementById('mygroups-list');
-        lista.innerHTML = '';
+        window.renderParticipo();
+        window.renderCriei();
+    };
 
+    /* ---------- Grupos que participo ---------- */
+    window.renderParticipo = function() {
+        const D = window.BandecandoData;
+        const grupos = D.getParticipatingGroups();
+        const lista = document.getElementById('participo-list');
+        lista.innerHTML = '';
         if (grupos.length === 0) {
-            lista.innerHTML = '<div class="empty-state">Você ainda não criou nenhum grupo.</div>';
+            lista.innerHTML = '<p class="section-empty">Você ainda não entrou em nenhum grupo.</p>';
             return;
         }
+        grupos.forEach(g => {
+            const openRUs = D.getGroupOpenRUs(g);
+            const aberto = openRUs.length > 0;
+            const card = document.createElement('div');
+            card.className = 'mygroup-card';
+            let html = `<h3 class="mygroup-name">${g.name}</h3>`;
+            html += `<p class="mygroup-desc">" ${g.desc} "</p>`;
+            if (aberto) {
+                openRUs.forEach(ru => {
+                    const horarios = D.getMeetingsForGroupInRU(g, ru).map(m => m.time).join(', ');
+                    html += `<p class="status-line open">📍 Aberto hoje em ${ru} • ${horarios}</p>`;
+                });
+            } else {
+                html += '<p class="status-line closed">Sem encontro aberto hoje</p>';
+            }
+            html += `<button class="btn-go" onclick="window.verGrupo('${g.id}')">${aberto ? 'Ver e confirmar presença' : 'Ver grupo'}</button>`;
+            html += `<button class="btn-leave-sm" onclick="window.askSair('${g.id}')">Sair do grupo</button>`;
+            card.innerHTML = html;
+            lista.appendChild(card);
+        });
+    };
 
-        const hoje = D.todayISO();
+    window.askSair = function(id) {
+        const g = window.BandecandoData.getGroupById(id);
+        document.getElementById('ask-title').innerText = 'Sair do grupo?';
+        document.getElementById('ask-text').innerText =
+            `Você deixará de participar de "${g ? g.name : 'este grupo'}".`;
+        document.getElementById('ask-confirm').onclick = () => {
+            window.BandecandoData.leaveGroup(id);
+            window.closeAsk(); window.initMeusGrupos();
+        };
+        document.getElementById('overlay-ask').classList.add('active');
+    };
+
+    window.verGrupo = function(id) {
+        localStorage.setItem('bandecando_selected_group_id', id);
+        localStorage.setItem('bandecando_group_origin', 'meus-grupos');
+        nav('grupo');
+    };
+
+    /* ---------- Grupos que criei ---------- */
+    window.renderCriei = function() {
+        const D = window.BandecandoData;
+        const grupos = D.getCreatedGroups();
+        const lista = document.getElementById('criei-list');
+        lista.innerHTML = '';
+        if (grupos.length === 0) {
+            lista.innerHTML = '<p class="section-empty">Você ainda não criou nenhum grupo.</p>';
+            return;
+        }
         grupos.forEach(g => {
             const card = document.createElement('div');
             card.className = 'mygroup-card';
-
             let html = `<h2 class="mygroup-name">${g.name}</h2>`;
             html += `<p class="mygroup-desc">" ${g.desc} "</p>`;
-            if (g.meetingPoint) html += `<p class="mygroup-info"><strong>Ponto de encontro:</strong> ${g.meetingPoint}</p>`;
             if (g.period) html += `<p class="mygroup-info"><strong>Válido:</strong> de hoje até ${D.formatDateBR(g.period)}</p>`;
             if (g.interests && g.interests.length) {
                 html += '<div class="chips">';
@@ -239,28 +285,44 @@
                 html += '</div>';
             }
 
-            const aberto = g.openRU && g.openDate === hoje && (g.times || []).length > 0;
+            // Editor de período permitido
+            html += '<div class="period-editor"><div class="lbl">Horários possíveis de encontro</div><div class="period-btns">';
+            [['tarde', 'Tarde'], ['noite', 'Noite'], ['ambos', 'Ambos']].forEach(([val, lab]) => {
+                const active = (g.periodType || 'ambos') === val ? ' active' : '';
+                html += `<button class="period-btn${active}" onclick="window.setPeriodo('${g.id}','${val}')">${lab}</button>`;
+            });
+            html += '</div></div>';
+
+            const openRUs = D.getGroupOpenRUs(g);
+            const aberto = openRUs.length > 0;
             if (aberto) {
-                const horarios = g.times.slice().sort().join(', ');
-                html += `<div class="open-banner">📍 Aberto em: ${g.openRU}<small>Horários: ${horarios}</small></div>`;
+                openRUs.forEach(ru => {
+                    const linhas = D.getMeetingsForGroupInRU(g, ru).map(m =>
+                        `${m.time} · ${m.point || 'ponto a definir'} (${m.attendees.length})`).join('<br>');
+                    html += `<div class="open-banner">📍 Aberto em: ${ru}<small>${linhas}</small></div>`;
+                });
                 html += '<div class="action-row">';
-                html += `<button class="btn-sm" onclick="window.adicionarHorario('${g.id}')">+ Horário</button>`;
-                html += `<button class="btn-sm" onclick="window.trocarRU('${g.id}')">Trocar RU</button>`;
+                html += `<button class="btn-sm" onclick="window.abrirHorario('${g.id}')">+ Abrir horário</button>`;
                 html += `<button class="btn-sm" onclick="window.askFechar('${g.id}')">Fechar encontro</button>`;
                 html += '</div>';
             } else {
                 html += '<p class="status-closed">Encontro fechado — não aparece nos grupos abertos.</p>';
-                html += `<button class="btn-open-encontro" onclick="window.abrirEncontro('${g.id}')">Abrir encontro do grupo</button>`;
+                html += `<button class="btn-open-encontro" onclick="window.abrirHorario('${g.id}')">Abrir encontro do grupo</button>`;
             }
-
             html += `<button class="btn-delete" onclick="window.askExcluir('${g.id}')">Excluir grupo</button>`;
-
             card.innerHTML = html;
             lista.appendChild(card);
         });
     };
 
-    /* ---- abrir/trocar/adicionar (balões RU + horário) ---- */
+    window.setPeriodo = function(id, tipo) {
+        window.BandecandoData.setPeriodType(id, tipo);
+        window.renderCriei();
+    };
+
+    /* ---- abrir um horário: escolhe RU -> horário -> ponto de encontro ----
+       Um turno pode ficar num RU diferente do outro (tarde e noite em RUs
+       distintos). Por isso o RU é escolhido a cada horário aberto. */
     function showRUBalloon() {
         const D = window.BandecandoData;
         const box = document.getElementById('ru-options');
@@ -278,16 +340,13 @@
     function showTimeBalloon(ru) {
         const D = window.BandecandoData;
         const grupo = D.getGroupById(window.OPEN_STATE.groupId);
-        // Em "adicionar horário", oferece só os horários ainda não abertos
-        const horarios = window.OPEN_STATE.mode === 'add'
-            ? D.getAvailableNewTimes(grupo, ru)
-            : D.HORARIOS;
-
-        document.getElementById('time-title').innerText =
-            window.OPEN_STATE.mode === 'add' ? 'Adicionar horário' : 'Horário de abertura';
-
+        const horarios = D.getAvailableNewTimes(grupo, ru); // horários ainda não abertos neste RU
+        document.getElementById('time-title').innerText = 'Escolha um horário';
         const box = document.getElementById('time-options');
         box.innerHTML = '';
+        if (horarios.length === 0) {
+            box.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem;">Não há horários disponíveis neste RU.</p>';
+        }
         horarios.forEach(h => {
             const opt = document.createElement('div');
             opt.className = 'time-option';
@@ -298,61 +357,62 @@
         document.getElementById('overlay-time').classList.add('active');
     }
 
-    window.abrirEncontro = function(id) {
-        window.OPEN_STATE = { groupId: id, mode: 'open', ru: null };
-        showRUBalloon();
-    };
-    window.trocarRU = function(id) {
-        window.OPEN_STATE = { groupId: id, mode: 'change', ru: null };
-        showRUBalloon();
-    };
-    window.adicionarHorario = function(id) {
-        const g = window.BandecandoData.getGroupById(id);
-        window.OPEN_STATE = { groupId: id, mode: 'add', ru: g.openRU };
-        showTimeBalloon(g.openRU);
-    };
-
+    window.abrirHorario = function(id) { window.OPEN_STATE = { groupId: id, ru: null, time: null }; showRUBalloon(); };
     window.chooseRU = function(ru) {
         window.OPEN_STATE.ru = ru;
         document.getElementById('overlay-ru').classList.remove('active');
         showTimeBalloon(ru);
     };
-
+    // Escolhido o horário, pede o ponto de encontro antes de abrir
     window.chooseTime = function(horario) {
+        window.OPEN_STATE.time = horario;
+        document.getElementById('overlay-time').classList.remove('active');
+        showPointBalloon();
+    };
+
+    function showPointBalloon() {
+        const D = window.BandecandoData;
+        const box = document.getElementById('point-options');
+        box.innerHTML = '';
+        D.MEETING_POINTS.forEach(p => {
+            const opt = document.createElement('div');
+            opt.className = 'time-option';
+            opt.onclick = () => window.choosePoint(p);
+            opt.innerHTML = `<span>${p}</span><div class="time-radio"></div>`;
+            box.appendChild(opt);
+        });
+        document.getElementById('overlay-point').classList.add('active');
+    }
+
+    window.choosePoint = function(point) {
         const D = window.BandecandoData;
         const st = window.OPEN_STATE;
-        if (st.mode === 'change') {
-            D.changeRU(st.groupId, st.ru, horario);
+        const horario = st.time;
+        const res = D.openMeeting(st.groupId, st.ru, horario, point);
+
+        document.getElementById('overlay-point').classList.remove('active');
+
+        if (res && res.error) {
+            document.getElementById('done-title').innerText = 'Não foi possível abrir';
+            document.getElementById('done-text').innerText = 'Horário fora do período permitido para este grupo.';
         } else {
-            D.openMeeting(st.groupId, st.ru, horario); // 'open' e 'add'
+            document.getElementById('done-title').innerText = 'Encontro aberto!';
+            document.getElementById('done-text').innerText = `Seu grupo aparece nos grupos abertos hoje do ${st.ru}, às ${horario}, em ${point}.`;
         }
-        document.getElementById('overlay-time').classList.remove('active');
-        document.getElementById('done-title').innerText =
-            st.mode === 'add' ? 'Horário adicionado!' : 'Encontro aberto!';
-        document.getElementById('done-text').innerText =
-            `Seu grupo aparece nos grupos abertos hoje do ${st.ru}, às ${horario}.`;
         document.getElementById('overlay-done').classList.add('active');
     };
 
-    /* ---- fechar / excluir (confirmação) ---- */
+    /* ---- fechar / excluir ---- */
     window.askFechar = function(id) {
         document.getElementById('ask-title').innerText = 'Fechar encontro?';
-        document.getElementById('ask-text').innerText =
-            'O grupo sairá dos "grupos abertos hoje", mas continuará em Meus grupos.';
-        document.getElementById('ask-confirm').onclick = () => {
-            window.BandecandoData.closeMeeting(id);
-            window.closeAsk(); window.initMeusGrupos();
-        };
+        document.getElementById('ask-text').innerText = 'O grupo sairá dos "grupos abertos hoje", mas continuará em Meus grupos.';
+        document.getElementById('ask-confirm').onclick = () => { window.BandecandoData.closeMeeting(id); window.closeAsk(); window.initMeusGrupos(); };
         document.getElementById('overlay-ask').classList.add('active');
     };
     window.askExcluir = function(id) {
         document.getElementById('ask-title').innerText = 'Excluir grupo?';
-        document.getElementById('ask-text').innerText =
-            'Esta ação não pode ser desfeita. O grupo será removido permanentemente.';
-        document.getElementById('ask-confirm').onclick = () => {
-            window.BandecandoData.deleteGroup(id);
-            window.closeAsk(); window.initMeusGrupos();
-        };
+        document.getElementById('ask-text').innerText = 'Esta ação não pode ser desfeita. O grupo será removido permanentemente.';
+        document.getElementById('ask-confirm').onclick = () => { window.BandecandoData.deleteGroup(id); window.closeAsk(); window.initMeusGrupos(); };
         document.getElementById('overlay-ask').classList.add('active');
     };
     window.closeAsk = function() { document.getElementById('overlay-ask').classList.remove('active'); };
@@ -360,6 +420,7 @@
     window.closeAll = function() {
         document.getElementById('overlay-ru').classList.remove('active');
         document.getElementById('overlay-time').classList.remove('active');
+        document.getElementById('overlay-point').classList.remove('active');
     };
     window.closeDone = function() {
         document.getElementById('overlay-done').classList.remove('active');

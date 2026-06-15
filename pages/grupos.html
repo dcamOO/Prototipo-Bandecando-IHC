@@ -129,6 +129,27 @@
         padding: 10px 4px;
     }
 
+    .grupos-footer {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-find-group {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        background-color: var(--green-primary);
+        color: #fff;
+        border-radius: var(--radius-btn);
+        font-weight: 700;
+        font-size: 1.05rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-find-group:active { transform: scale(0.99); opacity: 0.9; }
+
     .btn-create-group {
         width: 100%;
         padding: 16px;
@@ -144,7 +165,6 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        margin-top: auto;
     }
 
     .btn-create-group:active {
@@ -177,9 +197,12 @@
         <div id="groups-list"></div>
     </section>
 
-    <button class="btn-create-group" onclick="nav('criar-grupo')">
-        <span>+</span> Criar novo grupo
-    </button>
+    <div class="grupos-footer">
+        <button class="btn-find-group" onclick="nav('encontrar-grupos')">Encontrar grupos</button>
+        <button class="btn-create-group" onclick="nav('criar-grupo')">
+            <span>+</span> Criar novo grupo
+        </button>
+    </div>
 
 </div>
 
@@ -229,6 +252,7 @@
 
     window.openGroup = function(id) {
         localStorage.setItem('bandecando_selected_group_id', id);
+        localStorage.setItem('bandecando_group_origin', 'grupos');
         nav('grupo');
     };
 
