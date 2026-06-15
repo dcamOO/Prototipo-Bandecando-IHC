@@ -1,0 +1,455 @@
+<style>
+    .create-view {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        padding: 30px var(--spacing-main) 30px;
+        background-color: var(--bg-app);
+    }
+
+    .btn-back {
+        position: absolute;
+        left: 14px;
+        top: 24px;
+        background: none;
+        border: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 10;
+        transition: background-color 0.2s;
+    }
+
+    .btn-back:active { background-color: #e9ecef; }
+
+    .btn-back svg {
+        width: 24px;
+        height: 24px;
+        stroke: var(--text-main);
+        stroke-width: 2.2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .create-brand {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 24px;
+    }
+
+    .create-logo-img {
+        width: 70px;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .create-brand-name {
+        color: var(--green-text);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-top: 4px;
+    }
+
+    .field-group {
+        margin-bottom: 16px;
+    }
+
+    .field-label {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 6px;
+    }
+
+    .field-label .req {
+        color: #d00000;
+    }
+
+    .field-input,
+    .field-select,
+    .field-textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        background-color: var(--bg-card);
+        font-size: 1rem;
+        color: var(--text-main);
+        outline: none;
+        transition: border 0.2s;
+    }
+
+    .field-input::placeholder,
+    .field-textarea::placeholder {
+        color: #999;
+    }
+
+    .field-input:focus,
+    .field-select:focus,
+    .field-textarea:focus {
+        border-color: var(--green-primary);
+    }
+
+    .field-input.error,
+    .field-select.error,
+    .field-textarea.error {
+        border-color: #d00000;
+        background-color: #fff5f5;
+    }
+
+    .form-error {
+        display: none;
+        color: #d00000;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 12px;
+    }
+
+    .field-select {
+        appearance: none;
+        color: #999;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 18px;
+    }
+
+    .field-textarea {
+        resize: none;
+        min-height: 80px;
+        font-family: var(--font-family);
+    }
+
+    .form-note {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 8px 0 20px;
+    }
+
+    /* Período "até" */
+    .periodo-row { display: flex; align-items: center; gap: 10px; }
+    .periodo-prefix { font-weight: 700; color: var(--text-main); }
+    .periodo-row .field-input { flex: 1; }
+    .periodo-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+
+    /* Interesses: selecionar existentes ou criar novo */
+    .interest-add-row { display: flex; gap: 8px; margin-top: 10px; }
+    .interest-add-row .field-input { flex: 1; }
+    .btn-add-interest {
+        border: none;
+        border-radius: 12px;
+        padding: 0 16px;
+        background-color: var(--green-text);
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+    .btn-add-interest:active { opacity: 0.9; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip {
+        display: flex; align-items: center; gap: 6px;
+        background-color: #d8f3dc;
+        color: var(--green-primary);
+        font-size: 0.85rem; font-weight: 600;
+        padding: 6px 12px; border-radius: 16px;
+        cursor: pointer;
+    }
+    .chip .x { font-weight: 700; font-size: 1rem; line-height: 1; }
+
+    .create-action {
+        margin-top: auto;
+    }
+
+    /* ============ BALÃO (MODAL) ============ */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 414px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 50;
+        justify-content: center;
+        align-items: center;
+        padding: var(--spacing-main);
+    }
+
+    .overlay.active {
+        display: flex;
+        animation: fadeIn 0.25s ease forwards;
+    }
+
+    .balloon {
+        background-color: var(--bg-card);
+        border-radius: 20px;
+        padding: 24px 20px;
+        width: 100%;
+        max-width: 340px;
+        text-align: center;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        animation: popIn 0.25s ease forwards;
+        position: relative;
+    }
+
+    .balloon-close {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        color: #999;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .confirm-icon {
+        width: 48px;
+        height: auto;
+        margin-bottom: 8px;
+    }
+
+    .confirm-title {
+        color: var(--green-text);
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .confirm-text {
+        font-size: 0.95rem;
+        color: var(--text-main);
+        line-height: 1.4;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+</style>
+
+<div class="create-view">
+
+    <button class="btn-back" onclick="nav('grupos')" aria-label="Voltar">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+
+    <div class="create-brand">
+        <img src="assets/icon-talher.png" alt="Logo Bandecando" class="create-logo-img">
+        <div class="create-brand-name">Bandecando</div>
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">Nome <span class="req">*</span></label>
+        <input type="text" id="cg-nome" class="field-input" placeholder="Nome do grupo">
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">Ponto de encontro <span class="req">*</span></label>
+        <select id="cg-ponto" class="field-select">
+            <option value="" selected disabled>Selecione um ponto de encontro</option>
+            <option value="Entrada do RU">Entrada do RU</option>
+            <option value="Mesas externas">Mesas externas</option>
+            <option value="Início da fila">Início da fila</option>
+        </select>
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">Horários <span class="req">*</span></label>
+        <select id="cg-horario" class="field-select">
+            <option value="" selected disabled>Selecione os horários possíveis de encontro</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+        </select>
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">Período de duração <span class="req">*</span></label>
+        <div class="periodo-row">
+            <span class="periodo-prefix">até</span>
+            <input type="date" id="cg-periodo" class="field-input" onchange="window.updatePeriodoHint()">
+        </div>
+        <p class="periodo-hint" id="cg-periodo-hint">O grupo será válido de hoje até a data escolhida.</p>
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">Interesses</label>
+        <select id="cg-interesse-select" class="field-select" onchange="window.addInterestFromSelect()">
+            <option value="" selected disabled>Selecione um interesse</option>
+            <option value="Computação">Computação</option>
+            <option value="Jogos">Jogos</option>
+            <option value="Música">Música</option>
+            <option value="Esportes">Esportes</option>
+            <option value="Amizade">Amizade</option>
+            <option value="Culinária">Culinária</option>
+            <option value="Vegano">Vegano</option>
+            <option value="Debate">Debate</option>
+        </select>
+        <div class="interest-add-row">
+            <input type="text" id="cg-interesse-novo" class="field-input" placeholder="Ou crie um novo interesse"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();window.addCustomInterest();}">
+            <button type="button" class="btn-add-interest" onclick="window.addCustomInterest()">Adicionar</button>
+        </div>
+        <div class="chips" id="cg-chips"></div>
+    </div>
+
+    <div class="field-group">
+        <label class="field-label">Descrição</label>
+        <textarea id="cg-descricao" class="field-textarea" placeholder="Breve descrição do grupo"></textarea>
+    </div>
+
+    <p class="form-note">*Os grupos podem ter duração máxima de um semestre</p>
+
+    <p class="form-error" id="cg-error">Preencha todos os campos obrigatórios (*).</p>
+
+    <div class="create-action">
+        <button class="btn-primary" onclick="window.handleCreateGroup()">Criar grupo</button>
+    </div>
+
+    <!-- Balão: Grupo criado -->
+    <div class="overlay" id="overlay-created">
+        <div class="balloon">
+            <button class="balloon-close" onclick="window.closeAndBack()">&times;</button>
+            <img src="assets/icon-talher.png" alt="" class="confirm-icon">
+            <h2 class="confirm-title">Grupo criado com sucesso!</h2>
+            <p class="confirm-text">Abra um encontro em "Meus grupos" para ele aparecer nos grupos abertos de um RU.</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    window.cgInterests = [];
+
+    window.initCriarGrupo = function() {
+        const D = window.BandecandoData;
+        const hoje = D.todayISO();
+        const periodo = document.getElementById('cg-periodo');
+        periodo.min = hoje;          // bloqueia datas anteriores a hoje
+        window.cgInterests = [];
+        window.renderChips();
+        window.updatePeriodoHint();
+    };
+
+    window.updatePeriodoHint = function() {
+        const D = window.BandecandoData;
+        const periodo = document.getElementById('cg-periodo');
+        const hint = document.getElementById('cg-periodo-hint');
+        const hojeBR = D.formatDateBR(D.todayISO());
+        if (periodo.value) {
+            hint.innerText = `Válido de hoje (${hojeBR}) até ${D.formatDateBR(periodo.value)}.`;
+        } else {
+            hint.innerText = 'O grupo será válido de hoje até a data escolhida.';
+        }
+    };
+
+    // ---- Interesses (chips) ----
+    window.addInterest = function(valor) {
+        valor = (valor || '').trim();
+        if (!valor) return;
+        const existe = window.cgInterests.some(i => i.toLowerCase() === valor.toLowerCase());
+        if (!existe) { window.cgInterests.push(valor); window.renderChips(); }
+    };
+
+    window.addInterestFromSelect = function() {
+        const sel = document.getElementById('cg-interesse-select');
+        window.addInterest(sel.value);
+        sel.selectedIndex = 0; // volta ao placeholder
+    };
+
+    window.addCustomInterest = function() {
+        const input = document.getElementById('cg-interesse-novo');
+        window.addInterest(input.value);
+        input.value = '';
+        input.focus();
+    };
+
+    window.removeInterest = function(valor) {
+        window.cgInterests = window.cgInterests.filter(i => i !== valor);
+        window.renderChips();
+    };
+
+    window.renderChips = function() {
+        const box = document.getElementById('cg-chips');
+        box.innerHTML = '';
+        window.cgInterests.forEach(nome => {
+            const chip = document.createElement('span');
+            chip.className = 'chip';
+            chip.title = 'Remover';
+            chip.onclick = () => window.removeInterest(nome);
+            chip.innerHTML = `${nome} <span class="x">&times;</span>`;
+            box.appendChild(chip);
+        });
+    };
+
+    // ---- Criação ----
+    window.handleCreateGroup = function() {
+        const D = window.BandecandoData;
+        const nome = document.getElementById('cg-nome');
+        const ponto = document.getElementById('cg-ponto');
+        const horario = document.getElementById('cg-horario');
+        const periodo = document.getElementById('cg-periodo');
+        const descricao = document.getElementById('cg-descricao');
+        const errorMsg = document.getElementById('cg-error');
+
+        const obrigatorios = [nome, ponto, horario, periodo];
+        obrigatorios.forEach(c => c.classList.remove('error'));
+        errorMsg.style.display = 'none';
+
+        let valido = true;
+        obrigatorios.forEach(campo => {
+            if (!campo.value || !campo.value.trim()) {
+                campo.classList.add('error');
+                valido = false;
+            }
+        });
+
+        if (!valido) {
+            errorMsg.innerText = 'Preencha todos os campos obrigatórios (*).';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        // Data não pode ser anterior a hoje
+        if (periodo.value < D.todayISO()) {
+            periodo.classList.add('error');
+            errorMsg.innerText = 'A data de duração não pode ser anterior a hoje.';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        D.createGroup({
+            name: nome.value.trim(),
+            desc: descricao.value.trim() || 'Grupo recém-criado. Venha participar!',
+            meetingPoint: ponto.value,
+            prefTime: horario.value,
+            period: periodo.value,
+            interests: window.cgInterests.slice()
+        });
+
+        document.getElementById('overlay-created').classList.add('active');
+    };
+
+    // Após criar, vai para "Meus grupos" (para abrir um encontro)
+    window.closeAndBack = function() {
+        document.getElementById('overlay-created').classList.remove('active');
+        nav('meus-grupos');
+    };
+
+    window.initCriarGrupo();
+</script>

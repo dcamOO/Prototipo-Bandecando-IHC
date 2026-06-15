@@ -1,0 +1,511 @@
+<style>
+    .group-view {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        padding: 30px var(--spacing-main) 30px;
+        background-color: var(--bg-app);
+    }
+
+    .btn-back {
+        position: absolute;
+        left: 14px;
+        top: 24px;
+        background: none;
+        border: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 10;
+        transition: background-color 0.2s;
+    }
+
+    .btn-back:active { background-color: #e9ecef; }
+
+    .btn-back svg {
+        width: 24px;
+        height: 24px;
+        stroke: var(--text-main);
+        stroke-width: 2.2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .group-brand {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 24px;
+    }
+
+    .group-logo-img {
+        width: 70px;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .group-brand-name {
+        color: var(--green-text);
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-top: 4px;
+    }
+
+    .group-detail-card {
+        background-color: var(--bg-card);
+        border-radius: var(--radius-card);
+        padding: 24px 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+
+    .group-name {
+        color: var(--green-text);
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .group-desc {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        font-style: italic;
+        line-height: 1.4;
+        margin-bottom: 24px;
+    }
+
+    .group-section-title {
+        color: var(--green-text);
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .interests-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .interest-tag {
+        background-color: #d8f3dc;
+        color: var(--green-primary);
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 5px 14px;
+        border-radius: 16px;
+    }
+
+    .members-container {
+        display: flex;
+        gap: 8px;
+    }
+
+    .member-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .meetings-section { margin-top: 24px; }
+
+    .meeting-row {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+    }
+    .meeting-row:last-child { margin-bottom: 0; }
+
+    .meeting-time {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--green-text);
+        margin-bottom: 10px;
+    }
+    .meeting-count { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+
+    .meeting-avatars { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .mini-avatar {
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: var(--text-muted);
+        font-size: 0.75rem; font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .mini-avatar.me { background-color: var(--green-primary); color: #fff; }
+
+    .group-action {
+        margin-top: auto;
+        padding-top: 30px;
+    }
+
+    /* ============ BALÕES (MODAL) ============ */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        max-width: 414px;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 50;
+        justify-content: center;
+        align-items: center;
+        padding: var(--spacing-main);
+    }
+
+    .overlay.active {
+        display: flex;
+        animation: fadeIn 0.25s ease forwards;
+    }
+
+    .balloon {
+        background-color: var(--bg-card);
+        border-radius: 20px;
+        padding: 24px 20px;
+        width: 100%;
+        max-width: 340px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        animation: popIn 0.25s ease forwards;
+        position: relative;
+    }
+
+    .balloon-subtitle {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin: 16px 0 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .time-option.empty span { color: var(--text-muted); }
+    .time-pill {
+        font-size: 0.75rem; font-weight: 700;
+        color: var(--green-primary); background-color: #d8f3dc;
+        padding: 2px 8px; border-radius: 10px;
+    }
+
+    .balloon-close {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        color: #999;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .balloon-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 18px;
+    }
+
+    .time-option {
+        width: 100%;
+        background-color: #f7f7f7;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .time-option:last-child {
+        margin-bottom: 0;
+    }
+
+    .time-option:active {
+        transform: scale(0.98);
+    }
+
+    .time-option span {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--green-text);
+    }
+
+    .time-radio {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ced4da;
+        flex-shrink: 0;
+        transition: all 0.2s;
+    }
+
+    .time-option:active .time-radio,
+    .time-option.selected .time-radio {
+        border-color: var(--green-primary);
+        background-color: var(--green-primary);
+        box-shadow: inset 0 0 0 3px var(--bg-card);
+    }
+
+    /* Balão de confirmação */
+    .confirm-balloon {
+        text-align: center;
+    }
+
+    .confirm-icon {
+        width: 48px;
+        height: auto;
+        margin-bottom: 8px;
+    }
+
+    .confirm-title {
+        color: var(--green-text);
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .confirm-text {
+        font-size: 0.95rem;
+        color: var(--text-main);
+        line-height: 1.4;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+</style>
+
+<div class="group-view">
+
+    <button class="btn-back" onclick="nav('grupos')" aria-label="Voltar">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+
+    <div class="group-brand">
+        <img src="assets/icon-talher.png" alt="Logo Bandecando" class="group-logo-img">
+        <div class="group-brand-name">Bandecando</div>
+    </div>
+
+    <section class="group-detail-card">
+        <h1 class="group-name" id="group-name">Nome do grupo</h1>
+        <p class="group-desc" id="group-desc"></p>
+
+        <h2 class="group-section-title">Interesses</h2>
+        <div class="interests-container" id="group-interests"></div>
+
+        <h2 class="group-section-title" id="group-members-title">Membros</h2>
+        <div class="members-container" id="group-members"></div>
+    </section>
+
+    <section class="meetings-section">
+        <h2 class="group-section-title">Horários de hoje</h2>
+        <div id="meetings-list"></div>
+    </section>
+
+    <div class="group-action">
+        <button class="btn-primary" onclick="window.openTimeBalloon()">Quero me juntar ao grupo</button>
+    </div>
+
+    <!-- Balão: Escolha um horário (preenchido dinamicamente) -->
+    <div class="overlay" id="overlay-time">
+        <div class="balloon">
+            <button class="balloon-close" onclick="window.closeBalloons()">&times;</button>
+            <h2 class="balloon-title">Escolha um horário</h2>
+            <div id="time-options"></div>
+            <p class="balloon-subtitle" id="new-time-label">Abrir outro horário</p>
+            <div id="new-time-options"></div>
+        </div>
+    </div>
+
+    <!-- Balão: Presença confirmada -->
+    <div class="overlay" id="overlay-confirm">
+        <div class="balloon confirm-balloon">
+            <button class="balloon-close" onclick="window.closeAndBack()">&times;</button>
+            <img src="assets/icon-talher.png" alt="" class="confirm-icon">
+            <h2 class="confirm-title">Sua presença foi confirmada!</h2>
+            <p class="confirm-text" id="confirm-text">O grupo vai se encontrar às 12:00 no ponto de encontro.</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    window.GROUP_STATE = { id: null, ru: null, name: '' };
+
+    function avatarLabel(nome) {
+        return nome === window.BandecandoData.ME ? 'Eu' : nome;
+    }
+
+    window.initGroup = function() {
+        const D = window.BandecandoData;
+        const id = localStorage.getItem('bandecando_selected_group_id');
+        const ru = D.getSelectedRU();
+        const grupo = D.getGroupById(id);
+
+        if (!grupo) { nav('grupos'); return; }
+
+        window.GROUP_STATE = { id: grupo.id, ru: ru, name: grupo.name };
+
+        document.getElementById('group-name').innerText = grupo.name;
+        document.getElementById('group-desc').innerText = grupo.desc ? `" ${grupo.desc} "` : '';
+
+        // Interesses
+        const interestsBox = document.getElementById('group-interests');
+        interestsBox.innerHTML = '';
+        (grupo.interests || []).forEach(nome => {
+            const tag = document.createElement('span');
+            tag.className = 'interest-tag';
+            tag.innerText = nome;
+            interestsBox.appendChild(tag);
+        });
+
+        // Membros
+        const membros = grupo.members || [];
+        document.getElementById('group-members-title').innerText = `Membros (${membros.length})`;
+        const membersBox = document.getElementById('group-members');
+        membersBox.innerHTML = '';
+        membros.forEach(m => {
+            const av = document.createElement('div');
+            av.className = 'member-avatar' + (m === D.ME ? ' me' : '');
+            av.innerText = avatarLabel(m);
+            membersBox.appendChild(av);
+        });
+
+        window.renderMeetings();
+    };
+
+    // Lista "Horários de hoje" com quem vai a cada horário
+    window.renderMeetings = function() {
+        const D = window.BandecandoData;
+        const grupo = D.getGroupById(window.GROUP_STATE.id);
+        const meetings = D.getMeetingsForGroupInRU(grupo, window.GROUP_STATE.ru);
+        const lista = document.getElementById('meetings-list');
+        lista.innerHTML = '';
+
+        if (meetings.length === 0) {
+            lista.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem;">Nenhum horário marcado para hoje ainda.</p>';
+            return;
+        }
+
+        meetings.sort((a, b) => a.time.localeCompare(b.time)).forEach(m => {
+            const row = document.createElement('div');
+            row.className = 'meeting-row';
+
+            const head = document.createElement('div');
+            head.className = 'meeting-time';
+            const t = document.createElement('span');
+            t.innerText = m.time;
+            const c = document.createElement('span');
+            c.className = 'meeting-count';
+            c.innerText = `${m.attendees.length} ${m.attendees.length === 1 ? 'pessoa' : 'pessoas'}`;
+            head.appendChild(t); head.appendChild(c);
+
+            const avs = document.createElement('div');
+            avs.className = 'meeting-avatars';
+            m.attendees.forEach(a => {
+                const av = document.createElement('div');
+                av.className = 'mini-avatar' + (a === D.ME ? ' me' : '');
+                av.innerText = avatarLabel(a);
+                avs.appendChild(av);
+            });
+
+            row.appendChild(head);
+            row.appendChild(avs);
+            lista.appendChild(row);
+        });
+    };
+
+    // Balão "Escolha um horário": horários abertos (entrar) + outros (abrir)
+    window.openTimeBalloon = function() {
+        const D = window.BandecandoData;
+        const grupo = D.getGroupById(window.GROUP_STATE.id);
+        const ru = window.GROUP_STATE.ru;
+        const meetings = D.getMeetingsForGroupInRU(grupo, ru);
+        const meuHorario = D.getMyPresenceTime(window.GROUP_STATE.id, ru);
+
+        // Horários já abertos (entrar)
+        const box = document.getElementById('time-options');
+        box.innerHTML = '';
+        meetings.forEach(m => {
+            const opt = document.createElement('div');
+            opt.className = 'time-option';
+            opt.onclick = () => window.confirmPresence(m.time);
+            const left = document.createElement('span');
+            const jaEstou = m.time === meuHorario;
+            left.innerHTML = `${m.time} ${jaEstou
+                ? '<span class="time-pill">você está aqui</span>'
+                : `· ${m.attendees.length} ${m.attendees.length === 1 ? 'pessoa' : 'pessoas'}`}`;
+            const radio = document.createElement('div');
+            radio.className = 'time-radio';
+            opt.appendChild(left);
+            opt.appendChild(radio);
+            box.appendChild(opt);
+        });
+
+        // Horários ainda não abertos (abrir)
+        const novos = D.getAvailableNewTimes(grupo, ru);
+        const newBox = document.getElementById('new-time-options');
+        newBox.innerHTML = '';
+        document.getElementById('new-time-label').style.display = novos.length ? 'block' : 'none';
+        novos.forEach(t => {
+            const opt = document.createElement('div');
+            opt.className = 'time-option empty';
+            opt.onclick = () => window.confirmPresence(t);
+            opt.innerHTML = `<span>${t}</span><div class="time-radio"></div>`;
+            newBox.appendChild(opt);
+        });
+
+        document.getElementById('overlay-time').classList.add('active');
+    };
+
+    window.confirmPresence = function(horario) {
+        const D = window.BandecandoData;
+        D.confirmPresence(window.GROUP_STATE.id, window.GROUP_STATE.ru, horario);
+        window.renderMeetings(); // some do horário anterior e aparece no novo
+
+        document.getElementById('overlay-time').classList.remove('active');
+        document.getElementById('confirm-text').innerText =
+            `O grupo "${window.GROUP_STATE.name}" vai se encontrar às ${horario} no ${window.GROUP_STATE.ru}.`;
+        document.getElementById('overlay-confirm').classList.add('active');
+    };
+
+    window.closeBalloons = function() {
+        document.getElementById('overlay-time').classList.remove('active');
+        document.getElementById('overlay-confirm').classList.remove('active');
+    };
+
+    // Após entrar no grupo, volta para o menu principal (dashboard)
+    window.closeAndBack = function() {
+        window.closeBalloons();
+        nav('dashboard');
+    };
+
+    window.initGroup();
+</script>

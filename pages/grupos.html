@@ -1,0 +1,236 @@
+<style>
+    .grupos-view {
+        padding: var(--spacing-main);
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        padding-bottom: 40px;
+    }
+
+    .grupos-topbar {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+        min-height: 40px;
+    }
+
+    .btn-back {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 50%;
+        color: var(--text-main);
+        transition: background-color 0.2s;
+    }
+
+    .btn-back:active { background-color: #e9ecef; }
+
+    .btn-back svg {
+        width: 24px;
+        height: 24px;
+        stroke: var(--text-main);
+        stroke-width: 2.2;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .brand-header {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-logo-img {
+        width: 120px;
+        height: auto;
+        object-fit: contain;
+    }
+
+    .brand-subtitle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 8px;
+        font-weight: 400;
+    }
+
+    .groups-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-card);
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+    .groups-card-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--green-text);
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .group-item {
+        background-color: #e9ecef;
+        border: none;
+        border-radius: 14px;
+        padding: 16px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        margin-bottom: 16px;
+        transition: transform 0.1s, background-color 0.2s;
+    }
+
+    .group-item:last-child { margin-bottom: 0; }
+
+    .group-item:active {
+        transform: scale(0.98);
+        background-color: #dee2e6;
+    }
+
+    .group-item h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
+
+    .group-item p {
+        font-size: 0.9rem;
+        color: #6c757d;
+        line-height: 1.4;
+    }
+
+    .group-meta {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--green-primary);
+    }
+
+    .empty-state {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        padding: 10px 4px;
+    }
+
+    .btn-create-group {
+        width: 100%;
+        padding: 16px;
+        border: 1px solid #ced4da;
+        background-color: transparent;
+        border-radius: var(--radius-btn);
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--text-main);
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+    .btn-create-group:active {
+        background-color: #f0f0f0;
+        transform: scale(0.99);
+    }
+
+    .btn-create-group span {
+        font-size: 1.4rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+</style>
+
+<div class="grupos-view">
+
+    <div class="grupos-topbar">
+        <button class="btn-back" onclick="nav('dashboard')" aria-label="Voltar">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+    </div>
+
+    <header class="brand-header">
+        <img src="assets/logo.png" alt="Logo Bandecando" class="dashboard-logo-img">
+        <p class="brand-subtitle" id="grupos-header-subtitle">Carregando...</p>
+    </header>
+
+    <section class="groups-card">
+        <h2 class="groups-card-title">Grupos abertos hoje</h2>
+        <div id="groups-list"></div>
+    </section>
+
+    <button class="btn-create-group" onclick="nav('criar-grupo')">
+        <span>+</span> Criar novo grupo
+    </button>
+
+</div>
+
+<script>
+    window.initGrupos = function() {
+        const D = window.BandecandoData;
+        const ru = D.getSelectedRU();
+        const abertos = D.getOpenGroupsForRU(ru);
+
+        document.getElementById('grupos-header-subtitle').innerText =
+            `${ru} • ${abertos.length} ${abertos.length === 1 ? 'grupo aberto' : 'grupos abertos'}`;
+
+        const lista = document.getElementById('groups-list');
+        lista.innerHTML = '';
+
+        if (abertos.length === 0) {
+            const div = document.createElement('div');
+            div.className = 'empty-state';
+            div.innerText = 'Nenhum grupo aberto hoje neste RU. Que tal criar um novo grupo?';
+            lista.appendChild(div);
+            return;
+        }
+
+        abertos.forEach(grupo => {
+            const meetings = D.getMeetingsForGroupInRU(grupo, ru);
+            const totalPessoas = meetings.reduce((s, m) => s + m.attendees.length, 0);
+            const horarios = meetings.map(m => m.time).join(', ');
+
+            const btn = document.createElement('button');
+            btn.className = 'group-item';
+            btn.onclick = () => window.openGroup(grupo.id);
+
+            const h3 = document.createElement('h3');
+            h3.innerText = grupo.name;
+            const p = document.createElement('p');
+            p.innerText = grupo.desc;
+            const meta = document.createElement('span');
+            meta.className = 'group-meta';
+            meta.innerText = `${horarios} • ${totalPessoas} ${totalPessoas === 1 ? 'pessoa' : 'pessoas'} hoje`;
+
+            btn.appendChild(h3);
+            btn.appendChild(p);
+            btn.appendChild(meta);
+            lista.appendChild(btn);
+        });
+    };
+
+    window.openGroup = function(id) {
+        localStorage.setItem('bandecando_selected_group_id', id);
+        nav('grupo');
+    };
+
+    window.initGrupos();
+</script>

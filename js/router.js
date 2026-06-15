@@ -8,9 +8,10 @@ const rotas = {
     'login': 'pages/login.html',
     'ru-choice': 'pages/ru-choice.html',
     'dashboard': 'pages/dashboard.html',
-    'cardapio': 'pages/cardapio.html',
-    'fila': 'pages/fila.html',
-    'mural': 'pages/mural.html'
+    'grupos': 'pages/grupos.html',
+    'grupo': 'pages/grupo.html',
+    'criar-grupo': 'pages/criar-grupo.html',
+    'meus-grupos': 'pages/meus-grupos.html'
 };
 
 async function nav(sceneId) {

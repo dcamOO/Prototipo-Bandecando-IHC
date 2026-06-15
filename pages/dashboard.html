@@ -105,11 +105,58 @@
 
     @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .action-container { margin-top: auto; padding-top: 10px; }
+    .action-container { margin-top: auto; padding-top: 10px; display: flex; flex-direction: column; gap: 12px; }
+
+    .btn-back {
+        position: absolute;
+        left: 14px;
+        top: 24px;
+        background: none;
+        border: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 10;
+        transition: background-color 0.2s;
+    }
+    .btn-back:active { background-color: #e9ecef; }
+    .btn-back svg {
+        width: 24px; height: 24px;
+        stroke: var(--text-main); stroke-width: 2.2;
+        fill: none; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Botão "Meus grupos": cinza/desabilitado até existir ao menos 1 grupo criado */
+    .btn-meus-grupos {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: var(--radius-btn);
+        font-size: 1.05rem;
+        font-weight: 600;
+        background-color: #e0e0e0;
+        color: #9e9e9e;
+        cursor: not-allowed;
+        transition: all 0.2s;
+    }
+    .btn-meus-grupos.enabled {
+        background-color: var(--green-text);
+        color: #ffffff;
+        cursor: pointer;
+    }
+    .btn-meus-grupos.enabled:active { transform: scale(0.98); opacity: 0.9; }
 </style>
 
 <div class="dashboard-view">
-    
+
+    <button class="btn-back" onclick="nav('ru-choice')" aria-label="Trocar de RU">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+
     <header class="brand-header">
         <div class="brand-logo">
             <img src="assets/logo.png" alt="Logo Bandecando" class="dashboard-logo-img">
@@ -205,7 +252,8 @@
     </section>
 
     <div class="action-container">
-        <button class="btn-primary" onclick="nav('mural')">Encontre companhia</button>
+        <button class="btn-primary" onclick="nav('grupos')">Encontre companhia</button>
+        <button id="btn-meus-grupos" class="btn-meus-grupos" onclick="window.goMeusGrupos()">Meus grupos</button>
     </div>
 
 </div>
@@ -222,6 +270,15 @@
 
         // Atualiza a interface
         document.getElementById('dashboard-header-subtitle').innerText = `${ruSelecionado} • ${hoje}`;
+
+        // Habilita "Meus grupos" só se o usuário já criou ao menos um grupo
+        const temGrupos = window.BandecandoData.getMyGroups().length > 0;
+        const btnMeus = document.getElementById('btn-meus-grupos');
+        btnMeus.classList.toggle('enabled', temGrupos);
+    };
+
+    window.goMeusGrupos = function() {
+        if (window.BandecandoData.getMyGroups().length > 0) nav('meus-grupos');
     };
 
     // Fila: Expande ou recolhe as opções
