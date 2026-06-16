@@ -51,38 +51,9 @@
     .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; }
     .chip { background-color: #d8f3dc; color: var(--green-primary); font-size: 0.78rem; font-weight: 600; padding: 5px 12px; border-radius: 16px; }
 
-    .period-editor { margin: 10px 0 14px; }
-    .period-editor .lbl { font-size: 0.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
-    .period-btns { display: flex; gap: 8px; }
-    .period-btn {
-        flex: 1; padding: 9px 6px; border-radius: 10px; font-size: 0.8rem; font-weight: 600;
-        border: 1px solid var(--border-color); background: #fff; color: var(--text-muted); cursor: pointer; transition: all 0.2s;
-    }
-    .period-btn.active { border-color: var(--green-primary); background: #d8f3dc; color: var(--green-primary); }
-
-    .open-banner { background-color: #f1f8f3; border-radius: 12px; padding: 12px 14px; margin: 12px 0; font-size: 0.9rem; color: var(--green-primary); font-weight: 700; }
-    .open-banner small { display: block; font-weight: 600; color: #5a8f6b; margin-top: 4px; }
-    .status-closed { font-size: 0.84rem; color: var(--text-muted); margin: 8px 0 14px; font-style: italic; }
     .status-line { font-size: 0.84rem; font-weight: 600; margin: 6px 0 12px; }
     .status-line.open { color: var(--green-primary); }
     .status-line.closed { color: var(--text-muted); }
-
-    .action-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-    .btn-sm {
-        flex: 1; min-width: 0; padding: 11px 8px; border-radius: 12px;
-        border: 1px solid var(--green-primary); background-color: rgba(43,147,72,0.06);
-        color: var(--green-primary); font-weight: 600; font-size: 0.85rem; cursor: pointer;
-        transition: all 0.2s; white-space: nowrap;
-    }
-    .btn-sm:active { transform: scale(0.98); background-color: rgba(43,147,72,0.12); }
-
-    .btn-open-encontro {
-        width: 100%; padding: 14px; border: 1px solid var(--green-primary);
-        background-color: rgba(43,147,72,0.06); color: var(--green-primary);
-        border-radius: var(--radius-btn); font-weight: 700; font-size: 1rem; cursor: pointer;
-        transition: all 0.2s; margin-bottom: 12px;
-    }
-    .btn-open-encontro:active { transform: scale(0.99); background-color: rgba(43,147,72,0.12); }
 
     .btn-go {
         width: 100%; padding: 12px; border: none; background-color: var(--green-primary);
@@ -116,20 +87,6 @@
         width: 100%; max-width: 340px; box-shadow: 0 12px 40px rgba(0,0,0,0.25);
         animation: popIn 0.25s ease forwards; position: relative; max-height: 80vh; overflow-y: auto;
     }
-    .balloon-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-size: 1.4rem; color: #999; cursor: pointer; line-height: 1; }
-    .balloon-title { font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 18px; }
-
-    .time-option {
-        width: 100%; background-color: #f7f7f7; border: 1px solid var(--border-color); border-radius: 12px;
-        padding: 14px 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
-        cursor: pointer; transition: background-color 0.2s, transform 0.1s;
-    }
-    .time-option:last-child { margin-bottom: 0; }
-    .time-option:active { transform: scale(0.98); }
-    .time-option span { font-size: 1.05rem; font-weight: 600; color: var(--green-text); }
-    .time-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #ced4da; flex-shrink: 0; transition: all 0.2s; }
-    .time-option:active .time-radio { border-color: var(--green-primary); background-color: var(--green-primary); box-shadow: inset 0 0 0 3px var(--bg-card); }
-
     .confirm-balloon { text-align: center; }
     .confirm-icon { width: 48px; height: auto; margin-bottom: 8px; }
     .confirm-title { color: var(--green-text); font-size: 1.4rem; font-weight: 700; margin-bottom: 10px; }
@@ -162,43 +119,6 @@
     <h2 class="section-head">Grupos que criei</h2>
     <div id="criei-list"></div>
 
-    <!-- Balão: Escolha o RU -->
-    <div class="overlay" id="overlay-ru">
-        <div class="balloon">
-            <button class="balloon-close" onclick="window.closeAll()">&times;</button>
-            <h2 class="balloon-title">Escolha o RU</h2>
-            <div id="ru-options"></div>
-        </div>
-    </div>
-
-    <!-- Balão: Escolha o horário -->
-    <div class="overlay" id="overlay-time">
-        <div class="balloon">
-            <button class="balloon-close" onclick="window.closeAll()">&times;</button>
-            <h2 class="balloon-title" id="time-title">Horário de abertura</h2>
-            <div id="time-options"></div>
-        </div>
-    </div>
-
-    <!-- Balão: Escolha o ponto de encontro -->
-    <div class="overlay" id="overlay-point">
-        <div class="balloon">
-            <button class="balloon-close" onclick="window.closeAll()">&times;</button>
-            <h2 class="balloon-title">Ponto de encontro</h2>
-            <div id="point-options"></div>
-        </div>
-    </div>
-
-    <!-- Balão: confirmação -->
-    <div class="overlay" id="overlay-done">
-        <div class="balloon confirm-balloon">
-            <button class="balloon-close" onclick="window.closeDone()">&times;</button>
-            <img src="assets/icon-talher.png" alt="" class="confirm-icon">
-            <h2 class="confirm-title" id="done-title">Encontro aberto!</h2>
-            <p class="confirm-text" id="done-text"></p>
-        </div>
-    </div>
-
     <!-- Balão: ação destrutiva -->
     <div class="overlay" id="overlay-ask">
         <div class="balloon confirm-balloon">
@@ -214,8 +134,6 @@
 </div>
 
 <script>
-    window.OPEN_STATE = { groupId: null, ru: null, time: null };
-
     window.initMeusGrupos = function() {
         window.renderParticipo();
         window.renderCriei();
@@ -297,130 +215,25 @@
                 html += '</div>';
             }
 
-            // Editor de período permitido
-            html += '<div class="period-editor"><div class="lbl">Horários possíveis de encontro</div><div class="period-btns">';
-            [['tarde', 'Tarde'], ['noite', 'Noite'], ['ambos', 'Ambos']].forEach(([val, lab]) => {
-                const active = (g.periodType || 'ambos') === val ? ' active' : '';
-                html += `<button class="period-btn${active}" onclick="window.setPeriodo('${g.id}','${val}')">${lab}</button>`;
-            });
-            html += '</div></div>';
-
             const openRUs = D.getGroupOpenRUs(g);
             const aberto = openRUs.length > 0;
             if (aberto) {
                 openRUs.forEach(ru => {
-                    const linhas = D.getMeetingsForGroupInRU(g, ru).map(m =>
-                        `${m.time} · ${m.point || 'ponto a definir'} (${m.attendees.length})`).join('<br>');
-                    html += `<div class="open-banner">📍 Aberto em: ${ru}<small>${linhas}</small></div>`;
+                    const horarios = D.getMeetingsForGroupInRU(g, ru).map(m => m.time).join(', ');
+                    html += `<p class="status-line open">📍 Aberto hoje em ${ru} • ${horarios}</p>`;
                 });
-                html += '<div class="action-row">';
-                html += `<button class="btn-sm" onclick="window.abrirHorario('${g.id}')">+ Abrir horário</button>`;
-                html += `<button class="btn-sm" onclick="window.askFechar('${g.id}')">Fechar encontro</button>`;
-                html += '</div>';
             } else {
-                html += '<p class="status-closed">Encontro fechado — não aparece nos grupos abertos.</p>';
-                html += `<button class="btn-open-encontro" onclick="window.abrirHorario('${g.id}')">Abrir encontro do grupo</button>`;
+                html += '<p class="status-line closed">Sem encontro aberto hoje</p>';
             }
+
+            html += `<button class="btn-go" onclick="window.verGrupo('${g.id}')">Ver grupo</button>`;
             html += `<button class="btn-delete" onclick="window.askExcluir('${g.id}')">Excluir grupo</button>`;
             card.innerHTML = html;
             lista.appendChild(card);
         });
     };
 
-    window.setPeriodo = function(id, tipo) {
-        window.BandecandoData.setPeriodType(id, tipo);
-        window.renderCriei();
-    };
-
-    /* ---- abrir um horário: escolhe RU -> horário -> ponto de encontro ----
-       Um turno pode ficar num RU diferente do outro (tarde e noite em RUs
-       distintos). Por isso o RU é escolhido a cada horário aberto. */
-    function showRUBalloon() {
-        const D = window.BandecandoData;
-        const box = document.getElementById('ru-options');
-        box.innerHTML = '';
-        D.RUS.forEach(ru => {
-            const opt = document.createElement('div');
-            opt.className = 'time-option';
-            opt.onclick = () => window.chooseRU(ru);
-            opt.innerHTML = `<span>${ru}</span><div class="time-radio"></div>`;
-            box.appendChild(opt);
-        });
-        document.getElementById('overlay-ru').classList.add('active');
-    }
-
-    function showTimeBalloon(ru) {
-        const D = window.BandecandoData;
-        const grupo = D.getGroupById(window.OPEN_STATE.groupId);
-        const horarios = D.getAvailableNewTimes(grupo, ru); // horários ainda não abertos neste RU
-        document.getElementById('time-title').innerText = 'Escolha um horário';
-        const box = document.getElementById('time-options');
-        box.innerHTML = '';
-        if (horarios.length === 0) {
-            box.innerHTML = '<p style="color:var(--text-muted);font-size:0.9rem;">Não há horários disponíveis neste RU.</p>';
-        }
-        horarios.forEach(h => {
-            const opt = document.createElement('div');
-            opt.className = 'time-option';
-            opt.onclick = () => window.chooseTime(h);
-            opt.innerHTML = `<span>${h}</span><div class="time-radio"></div>`;
-            box.appendChild(opt);
-        });
-        document.getElementById('overlay-time').classList.add('active');
-    }
-
-    window.abrirHorario = function(id) { window.OPEN_STATE = { groupId: id, ru: null, time: null }; showRUBalloon(); };
-    window.chooseRU = function(ru) {
-        window.OPEN_STATE.ru = ru;
-        document.getElementById('overlay-ru').classList.remove('active');
-        showTimeBalloon(ru);
-    };
-    // Escolhido o horário, pede o ponto de encontro antes de abrir
-    window.chooseTime = function(horario) {
-        window.OPEN_STATE.time = horario;
-        document.getElementById('overlay-time').classList.remove('active');
-        showPointBalloon();
-    };
-
-    function showPointBalloon() {
-        const D = window.BandecandoData;
-        const box = document.getElementById('point-options');
-        box.innerHTML = '';
-        D.MEETING_POINTS.forEach(p => {
-            const opt = document.createElement('div');
-            opt.className = 'time-option';
-            opt.onclick = () => window.choosePoint(p);
-            opt.innerHTML = `<span>${p}</span><div class="time-radio"></div>`;
-            box.appendChild(opt);
-        });
-        document.getElementById('overlay-point').classList.add('active');
-    }
-
-    window.choosePoint = function(point) {
-        const D = window.BandecandoData;
-        const st = window.OPEN_STATE;
-        const horario = st.time;
-        const res = D.openMeeting(st.groupId, st.ru, horario, point);
-
-        document.getElementById('overlay-point').classList.remove('active');
-
-        if (res && res.error) {
-            document.getElementById('done-title').innerText = 'Não foi possível abrir';
-            document.getElementById('done-text').innerText = 'Horário fora do período permitido para este grupo.';
-        } else {
-            document.getElementById('done-title').innerText = 'Encontro aberto!';
-            document.getElementById('done-text').innerText = `Seu grupo aparece nos grupos abertos hoje do ${st.ru}, às ${horario}, em ${point}.`;
-        }
-        document.getElementById('overlay-done').classList.add('active');
-    };
-
-    /* ---- fechar / excluir ---- */
-    window.askFechar = function(id) {
-        document.getElementById('ask-title').innerText = 'Fechar encontro?';
-        document.getElementById('ask-text').innerText = 'O grupo sairá dos "grupos abertos hoje", mas continuará em Meus grupos.';
-        document.getElementById('ask-confirm').onclick = () => { window.BandecandoData.closeMeeting(id); window.closeAsk(); window.initMeusGrupos(); };
-        document.getElementById('overlay-ask').classList.add('active');
-    };
+    /* ---- excluir ---- */
     window.askExcluir = function(id) {
         document.getElementById('ask-title').innerText = 'Excluir grupo?';
         document.getElementById('ask-text').innerText = 'Esta ação não pode ser desfeita. O grupo será removido permanentemente.';
@@ -428,16 +241,6 @@
         document.getElementById('overlay-ask').classList.add('active');
     };
     window.closeAsk = function() { document.getElementById('overlay-ask').classList.remove('active'); };
-
-    window.closeAll = function() {
-        document.getElementById('overlay-ru').classList.remove('active');
-        document.getElementById('overlay-time').classList.remove('active');
-        document.getElementById('overlay-point').classList.remove('active');
-    };
-    window.closeDone = function() {
-        document.getElementById('overlay-done').classList.remove('active');
-        window.initMeusGrupos();
-    };
 
     window.initMeusGrupos();
 </script>

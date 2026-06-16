@@ -61,9 +61,47 @@
     .brand-subtitle {
         font-size: 0.9rem;
         color: var(--text-muted);
-        margin-top: 8px;
         font-weight: 400;
     }
+
+    /* Seletor de RU (dropdown) */
+    .ru-selector { position: relative; display: flex; justify-content: center; margin-top: 8px; }
+    .ru-selector-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: none; border: none; cursor: pointer;
+        padding: 6px 10px; border-radius: 12px; transition: background-color 0.2s;
+    }
+    .ru-selector-btn:active { background-color: #e9ecef; }
+    .ru-caret {
+        width: 18px; height: 18px; stroke: var(--green-primary); stroke-width: 2.4;
+        fill: none; stroke-linecap: round; stroke-linejoin: round;
+        transition: transform 0.2s; flex-shrink: 0;
+    }
+    .ru-selector.open .ru-caret { transform: rotate(180deg); }
+
+    .ru-menu {
+        display: none;
+        position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+        margin-top: 6px; width: 300px; max-width: 92vw;
+        background: var(--bg-card); border: 1px solid var(--border-color);
+        border-radius: 14px; box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+        z-index: 30; overflow: hidden;
+    }
+    .ru-selector.open .ru-menu { display: block; }
+
+    .ru-menu-item {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        width: 100%; padding: 13px 14px; background: none; border: none;
+        border-bottom: 1px solid #eef0f2; text-align: left; cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .ru-menu-item:last-child { border-bottom: none; }
+    .ru-menu-item:active { background-color: #f1f3f5; }
+    .ru-menu-item.active { background-color: #d8f3dc; }
+    .ru-menu-name { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+    .ru-menu-item.active .ru-menu-name { color: var(--green-primary); }
+    .ru-menu-count { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+    .ru-menu-item.active .ru-menu-count { color: var(--green-primary); }
 
     .groups-card {
         background-color: var(--bg-card);
@@ -189,7 +227,13 @@
 
     <header class="brand-header">
         <img src="assets/logo.png" alt="Logo Bandecando" class="dashboard-logo-img">
-        <p class="brand-subtitle" id="grupos-header-subtitle">Carregando...</p>
+        <div class="ru-selector" id="ru-selector">
+            <button class="ru-selector-btn" onclick="window.toggleRUMenu()" aria-haspopup="true" aria-expanded="false">
+                <span class="brand-subtitle" id="grupos-header-subtitle">Carregando...</span>
+                <svg class="ru-caret" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ru-menu" id="ru-menu"></div>
+        </div>
     </header>
 
     <section class="groups-card">
@@ -214,6 +258,20 @@
 
         document.getElementById('grupos-header-subtitle').innerText =
             `${ru} • ${abertos.length} ${abertos.length === 1 ? 'grupo aberto' : 'grupos abertos'}`;
+
+        // Menu de RUs: cada RU com a quantidade de grupos abertos
+        const menu = document.getElementById('ru-menu');
+        menu.innerHTML = '';
+        D.RUS.forEach(r => {
+            const count = D.getOpenGroupsForRU(r).length;
+            const item = document.createElement('button');
+            item.className = 'ru-menu-item' + (r === ru ? ' active' : '');
+            item.onclick = () => window.selectRU(r);
+            item.innerHTML =
+                `<span class="ru-menu-name">${r}</span>` +
+                `<span class="ru-menu-count">${count} ${count === 1 ? 'grupo aberto' : 'grupos abertos'}</span>`;
+            menu.appendChild(item);
+        });
 
         const lista = document.getElementById('groups-list');
         lista.innerHTML = '';
@@ -254,6 +312,43 @@
         localStorage.setItem('bandecando_selected_group_id', id);
         localStorage.setItem('bandecando_group_origin', 'grupos');
         nav('grupo');
+    };
+
+    // Abre/fecha o menu de RUs
+    window.toggleRUMenu = function() {
+        const sel = document.getElementById('ru-selector');
+        const open = sel.classList.toggle('open');
+        sel.querySelector('.ru-selector-btn').setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) window.attachRUOutside(); else window.detachRUOutside();
+    };
+    window.closeRUMenu = function() {
+        const sel = document.getElementById('ru-selector');
+        if (sel) {
+            sel.classList.remove('open');
+            sel.querySelector('.ru-selector-btn').setAttribute('aria-expanded', 'false');
+        }
+        window.detachRUOutside();
+    };
+    // Fecha o menu ao clicar fora dele
+    window.attachRUOutside = function() {
+        window.detachRUOutside();
+        window._ruOutsideHandler = function(e) {
+            const sel = document.getElementById('ru-selector');
+            if (sel && !sel.contains(e.target)) window.closeRUMenu();
+        };
+        document.addEventListener('click', window._ruOutsideHandler);
+    };
+    window.detachRUOutside = function() {
+        if (window._ruOutsideHandler) {
+            document.removeEventListener('click', window._ruOutsideHandler);
+            window._ruOutsideHandler = null;
+        }
+    };
+    // Troca o RU selecionado e re-renderiza a página deste RU
+    window.selectRU = function(ru) {
+        localStorage.setItem('bandecando_selected_ru', ru);
+        window.closeRUMenu();
+        window.initGrupos();
     };
 
     window.initGrupos();

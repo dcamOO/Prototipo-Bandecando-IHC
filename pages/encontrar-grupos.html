@@ -166,13 +166,9 @@
 
             html += '<div class="find-actions">';
             html += sou
-                ? '<button class="find-btn join is-member">✓ Você participa</button>'
+                ? `<button class="find-btn join is-member">✓ ${g.owner ? 'Este grupo é seu' : 'Você participa'}</button>`
                 : `<button class="find-btn join" onclick="window.entrar('${g.id}')">Entrar no grupo</button>`;
-            if (aberto) {
-                html += `<button class="find-btn go" onclick="window.verGrupo('${g.id}')">Confirmar presença</button>`;
-            } else {
                 html += `<button class="find-btn go" onclick="window.verGrupo('${g.id}')">Ver grupo</button>`;
-            }
             html += '</div>';
 
             card.innerHTML = html;

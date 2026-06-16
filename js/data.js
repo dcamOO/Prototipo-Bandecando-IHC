@@ -369,6 +369,19 @@
             }));
     }
 
+    // Todos os encontros de hoje do grupo, em QUALQUER RU. Cada turno (tarde/
+    // noite) é um encontro independente, mesmo que no mesmo RU.
+    // -> [{ ru, time, attendees[], point }] ordenado por horário.
+    function getAllMeetingsForGroup(group) {
+        const out = [];
+        getGroupOpenRUs(group).forEach(ru => {
+            getMeetingsForGroupInRU(group, ru).forEach(m => {
+                out.push({ ru: ru, time: m.time, attendees: m.attendees, point: m.point });
+            });
+        });
+        return out.sort((a, b) => a.time.localeCompare(b.time));
+    }
+
     // Grupo "aberto" = tem encontro com gente hoje em ao menos um RU
     function isGroupOpen(group) {
         return getGroupOpenRUs(group).length > 0;
@@ -435,6 +448,26 @@
         clearPresence(groupId);
     }
 
+    // Fecha apenas UM encontro (turno+RU+horário) do grupo, escolhido pelo dono.
+    // Os demais encontros do mesmo grupo continuam abertos.
+    function closeMeetingAt(groupId, ru, time) {
+        const turno = turnoOf(time);
+        if (!turno) return;
+        const p = getPresence();
+        const pr = p[turno];
+        if (pr && pr.groupId === groupId && pr.ru === ru && pr.time === time) {
+            delete p[turno];
+            savePresence(p);
+        }
+        // Se não restou nenhum encontro aberto, zera a referência de último RU
+        const custom = getCustomGroups();
+        const g = custom.find(x => x.id === groupId);
+        if (g && getGroupOpenRUs(g).length === 0) {
+            g.openRU = null; g.openDate = null;
+            saveCustomGroups(custom);
+        }
+    }
+
     function deleteGroup(groupId) {
         saveCustomGroups(getCustomGroups().filter(g => g.id !== groupId));
         saveMemberships(getMemberships().filter(id => id !== groupId));
@@ -473,8 +506,8 @@
         getAllGroupsRaw, getGroupById, getCreatedGroups, getParticipatingGroups,
         hasAnyGroup, isMember, joinGroup, leaveGroup, getMembersWithMe,
         getGroupRU, getGroupOpenRUs, isGroupOpen, getOpenGroupsForRU, getMeetingsForGroupInRU,
-        getOpenTimes, getAvailableNewTimes, isMyPresence, getAllowedTimes,
-        confirmPresence, createGroup, openMeeting, closeMeeting, deleteGroup,
+        getAllMeetingsForGroup, getOpenTimes, getAvailableNewTimes, isMyPresence, getAllowedTimes,
+        confirmPresence, createGroup, openMeeting, closeMeeting, closeMeetingAt, deleteGroup,
         setPeriodType, getAllInterests
     };
 })();
