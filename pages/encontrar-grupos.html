@@ -30,6 +30,10 @@
     .find-title {
         font-size: 1.3rem; font-weight: 700; color: var(--green-text);
     }
+    .find-subtitle {
+        font-size: 0.85rem; color: var(--text-muted);
+        text-align: center; line-height: 1.4; margin: 2px 4px 4px;
+    }
 
     .filter-label { font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin: 14px 0 8px; }
     .filter-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
@@ -60,8 +64,17 @@
     .find-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
     .find-chip { background-color: #d8f3dc; color: var(--green-primary); font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 12px; }
 
-    .find-status { font-size: 0.82rem; font-weight: 600; margin-bottom: 12px; }
-    .find-status.open { color: var(--green-primary); }
+    .find-status { font-size: 0.82rem; font-weight: 700; margin-bottom: 12px; }
+    /* Verde escuro sobre faixa clara: contraste AA legível (antes o verde se
+       misturava com o fundo do card). */
+    .find-status.open {
+        color: var(--green-status);
+        display: table;
+        background-color: #e6f4ea;
+        padding: 4px 10px;
+        border-radius: 8px;
+        margin-top: 4px;
+    }
     .find-status.closed { color: var(--text-muted); }
 
     .find-actions { display: flex; gap: 8px; }
@@ -85,6 +98,8 @@
         </button>
         <h1 class="find-title">Encontrar grupos</h1>
     </div>
+
+    <p class="find-subtitle">Estes são todos os grupos do Bandecando. Use os filtros abaixo para refinar por interesse.</p>
 
     <p class="filter-label">Filtrar por interesse</p>
     <div class="filter-chips" id="filter-chips"></div>

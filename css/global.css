@@ -11,6 +11,7 @@
     --green-logo: #00c853;       /* Verde vibrante (Logo e título principal) */
     --green-text: #2c9e4b;       /* Verde escuro para títulos de seção (Cardápio) */
     --green-light: #43a047;      /* Verde claro (Status da fila) */
+    --green-status: #136b30;     /* Verde escuro p/ texto de status sobre fundo claro (contraste AA - WCAG) */
     
     --border-color: #e0e0e0;     /* Bordas sutis dos cartões */
 

@@ -162,15 +162,50 @@
         // getDay(): 0=Dom..6=Sáb. Fim de semana cai na próxima segunda.
         return ['seg', 'seg', 'ter', 'qua', 'qui', 'sex', 'seg'][new Date().getDay()];
     }
+
+    // Etiquetas de restrição vinculadas ao ITEM individual (chave normalizada -> tags).
+    // Assim a tag fica presa ao alimento específico e não à categoria inteira,
+    // evitando a ambiguidade de "qual item da categoria realmente tem a restrição".
+    const ITEM_TAGS = {
+        'doce de leite': ['Contém Lactose'],
+        'farofa de couve': ['Contém Glúten'],
+        'batata palha': ['Contém Glúten'],
+        'polenta': ['Contém Lactose']
+    };
+    function tagsForItem(name) {
+        return (ITEM_TAGS[normalizeName(name)] || []).slice();
+    }
+    // Quebra "A, B e C" em ['A','B','C'].
+    function splitItems(str) {
+        return (str || '').split(/\s*,\s*|\s+e\s+/).map(s => s.trim()).filter(Boolean);
+    }
+    // Lista de itens {name, tags}. dishTags só são aplicadas quando a categoria
+    // é um prato único (1 item) — em listas, cada item carrega só suas próprias tags.
+    function buildItems(str, dishTags) {
+        const parts = splitItems(str);
+        const single = parts.length === 1;
+        return parts.map((name, i) => {
+            const base = (single && i === 0 && dishTags ? dishTags.slice() : []).concat(tagsForItem(name));
+            return { name: name, tags: base.filter((t, idx) => base.indexOf(t) === idx) }; // sem duplicatas
+        });
+    }
+
     function getMenu(ru, dayKey) {
         const porRU = MAINS[ru] || MAINS['Restaurante Setorial I'];
         const mains = porRU[dayKey] || porRU.seg;
         const sides = SIDES_BY_DAY[dayKey] || SIDES_BY_DAY.seg;
         return {
-            principal: mains.principal, principalTags: ['Proteína'],
-            vegetariano: mains.vegetariano, vegTags: mains.vegTags || [],
-            guarnicoes: sides.guarnicoes, salada: sides.salada,
-            sobremesa: sides.sobremesa, sobremesaTags: sides.sobremesaTags || []
+            // Resumo (cardápio recolhido)
+            principal: mains.principal,
+            vegetariano: mains.vegetariano,
+            // Categorias com itens individuais e tags por item
+            groups: [
+                { label: 'Prato Principal', items: buildItems(mains.principal, ['Proteína']) },
+                { label: 'Opção Vegetariana', items: buildItems(mains.vegetariano, mains.vegTags || []) },
+                { label: 'Guarnições', items: buildItems(sides.guarnicoes) },
+                { label: 'Salada', items: buildItems(sides.salada) },
+                { label: 'Sobremesa', items: buildItems(sides.sobremesa, sides.sobremesaTags || []) }
+            ]
         };
     }
 

@@ -51,8 +51,16 @@
     .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; }
     .chip { background-color: #d8f3dc; color: var(--green-primary); font-size: 0.78rem; font-weight: 600; padding: 5px 12px; border-radius: 16px; }
 
-    .status-line { font-size: 0.84rem; font-weight: 600; margin: 6px 0 12px; }
-    .status-line.open { color: var(--green-primary); }
+    .status-line { font-size: 0.84rem; font-weight: 700; margin: 6px 0 12px; }
+    /* Verde escuro sobre faixa clara: contraste AA legível */
+    .status-line.open {
+        color: var(--green-status);
+        display: table;
+        background-color: #e6f4ea;
+        padding: 4px 10px;
+        border-radius: 8px;
+        margin-top: 4px;
+    }
     .status-line.closed { color: var(--text-muted); }
 
     .btn-go {
